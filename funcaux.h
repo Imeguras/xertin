@@ -1,0 +1,4 @@
+#ifndef FUNCAUX_IMPLEMENTED
+#define FUNCAUX_IMPLEMENTED
+
+#endif
