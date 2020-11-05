@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include "cmdline.h"
 #include "pngdec.h"
+#include "grapdec.h"
 
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 uint8_t standartout=STDOUT_FILENO;
@@ -25,7 +26,14 @@ int32_t main(int argc, char *argv[]){
         }else{
             dprintf(standartout,"\nExtension is %s",ext+1);
             if (!strcmp(ext+1, "png")){
-                readPNG(args.decode_arg, favblock);
+                //uint8_t *done;
+                png_bytepp matrix;
+                int32_t *rst_rowbytes;
+                int32_t *rst_width;
+                int32_t *rst_height;
+                matrix = readPNG(args.decode_arg,rst_rowbytes,rst_width, rst_height);
+                
+                
             }else if (!strcmp(ext+1, "jpg")){
                 
             }else if (!strcmp(ext+1, "gif")){
