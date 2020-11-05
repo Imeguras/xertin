@@ -1,0 +1,7 @@
+*.o
+core.*
+*~
+xertim
+*.bak
+args.h
+args.c

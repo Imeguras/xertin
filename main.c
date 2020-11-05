@@ -7,7 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
-#include "cmdline.h"
+#include "args.h"
 #include "pngdec.h"
 #include "grapdec.h"
 

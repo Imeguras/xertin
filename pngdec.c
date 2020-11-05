@@ -39,7 +39,7 @@ png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_heig
     fp = NULL;
     return NULL;
   }
-  png_infop info_ptr = png_create_info_struct(png_ptr);
+  info_ptr = png_create_info_struct(png_ptr);
   if (info_ptr == NULL)
   {
     fprintf(stderr, "cannot create png info structure\n");
@@ -78,13 +78,13 @@ png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_heig
   png_read_info(png_ptr, info_ptr);
   
   // get info of png image
-  int width = png_get_image_width(png_ptr, info_ptr);
-  int height = png_get_image_height(png_ptr, info_ptr);
-  int bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-  int color_type = png_get_color_type(png_ptr, info_ptr);
-  int interlace_type = png_get_interlace_type(png_ptr, info_ptr);
-  int channels = png_get_channels(png_ptr, info_ptr);
-  int rowbytes = png_get_rowbytes(png_ptr, info_ptr);
+  width = png_get_image_width(png_ptr, info_ptr);
+  height = png_get_image_height(png_ptr, info_ptr);
+  bit_depth = png_get_bit_depth(png_ptr, info_ptr);
+  color_type = png_get_color_type(png_ptr, info_ptr);
+  interlace_type = png_get_interlace_type(png_ptr, info_ptr);
+  int32_t channels = png_get_channels(png_ptr, info_ptr);
+  int32_t rowbytes = png_get_rowbytes(png_ptr, info_ptr);
 
   printf("width = %d\n", width);
   printf("height = %d\n", height);

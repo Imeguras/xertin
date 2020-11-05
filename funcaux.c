@@ -1,4 +1,4 @@
-#include <funcaux.h> 
+#include "funcaux.h"
 void abort_(const char * s, ...)
 {
         va_list args;

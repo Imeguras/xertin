@@ -8,6 +8,6 @@
 #include <X11/Xlib.h>
 #include "gfx.h"
 #include <png.h>
-uint8_t **(*EscreveNoEcra)(uint8_t **matrix, int32_t width, int32_t height);
-uint8_t **EscrevePngNoEcra(uint8_t **matrix, int32_t width, int32_t height, const int8_t *title));
+//uint8_t **(*EscreveNoEcra)(uint8_t **matrix, int32_t width, int32_t height);
+uint8_t **JanelaEescreve(uint8_t **matrix, int32_t width, int32_t height, const int8_t *title);
 #endif
