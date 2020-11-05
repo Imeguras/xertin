@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <unistd.h>
+#include <png.h>
 #include "args.h"
 #include "pngdec.h"
 #include "grapdec.h"
@@ -24,16 +25,19 @@ int32_t main(int argc, char *argv[]){
         if(!ext){
             dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
         }else{
-            dprintf(standartout,"\nExtension is %s",ext+1);
+            dprintf(standartout,"\nExtension is %s\n",ext+1);
             if (!strcmp((const char *)ext+1, "png")){
                 //uint8_t *done;
-                png_bytepp matrix;
-                uint32_t *rst_rowbytes;
-                uint32_t *rst_width;
-                uint32_t *rst_height;
-                matrix = readPNG(args.decode_arg,rst_rowbytes,rst_width, rst_height);
-                
-                
+                 
+                int32_t rowbytes=0;
+                uint32_t pwidth=0, pheight=0;
+                png_bytepp matrix = readPNG(args.decode_arg,&rowbytes,&pwidth, &pheight);
+                //free_image_data(matrix,pheight);
+                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
+                JanelaEescrevePTR=&JanelaEescreve;
+                JanelaEescreve(matrix, pwidth, pheight, args.decode_arg);
+                free_image_data(matrix, pheight);
+
             }else if (!strcmp((const char *)ext+1, "jpg")){
                 
             }else if (!strcmp((const char *)ext+1, "gif")){

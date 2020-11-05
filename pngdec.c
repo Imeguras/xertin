@@ -1,9 +1,8 @@
 #include "pngdec.h"
-png_bytepp readPNG(char *file, uint32_t* rst_rowbytes, uint32_t* rst_width, uint32_t* rst_height){
+png_bytepp readPNG(char *file, int32_t* rst_rowbytes, uint32_t* rst_width, uint32_t* rst_height){
   png_structp png_ptr;
   png_infop info_ptr;
   uint8_t iheader[8];
-  uint32_t sig_read = 0;
   png_uint_32 width, height;
   int bit_depth, color_type, interlace_type;
   FILE *fp;
@@ -137,13 +136,17 @@ png_bytepp readPNG(char *file, uint32_t* rst_rowbytes, uint32_t* rst_width, uint
   // note: i think we could allocate continous memory space that result in just png_bytep
   // but for some reason it might due to internal libpng's internal implementation that possibly
   // needs some flexibility in row by row pointer, thus we need to allocate memory space this way
-  png_bytepp row_ptr = (png_bytepp)malloc(sizeof(png_bytep) * height);
-  for (png_uint_32 y=0; y<height; ++y)
-  {
-    row_ptr[y] = (png_bytep)malloc(rowbytes);
+  png_bytepp matrix = (png_bytepp)realloc(matrix,sizeof(png_bytep) * height);
+  int y;
+  for (y=0; y<height; y++){
+    
+    
+    //hello=(png_bytep)calloc(rowbytes, sizeof(png_bytep));
+    //free(hello);
+    matrix[y]=(png_bytep)malloc(rowbytes);
   }
   // read image data
-  png_read_image(png_ptr, row_ptr);
+  png_read_image(png_ptr, matrix);
   
   // clear png resource
   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
@@ -155,15 +158,26 @@ png_bytepp readPNG(char *file, uint32_t* rst_rowbytes, uint32_t* rst_width, uint
   // return results
   if (rst_rowbytes != NULL)
   {
-    *rst_rowbytes = rowbytes;
+    *rst_rowbytes = (int32_t)rowbytes;
   }
   if (rst_width != NULL)
   {
-    *rst_width = width;
+    *rst_width = (uint32_t)width;
   }
   if (rst_height != NULL)
   {
-    *rst_height = height;
+    *rst_height = (uint32_t)height;
   }
-  return row_ptr;
+  return matrix;
+}
+
+
+void free_image_data(png_bytepp data, int height)
+{
+  for (int y=0; y<height; ++y)
+  {
+    free(data[y]);
+    data[y] = NULL;
+  }
+  free(data);
 }
