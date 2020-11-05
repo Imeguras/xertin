@@ -1,5 +1,5 @@
 #include "pngdec.h"
-png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_height){
+png_bytepp readPNG(char *file, uint32_t* rst_rowbytes, uint32_t* rst_width, uint32_t* rst_height){
   png_structp png_ptr;
   png_infop info_ptr;
   uint8_t iheader[8];
@@ -138,13 +138,13 @@ png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_heig
   // but for some reason it might due to internal libpng's internal implementation that possibly
   // needs some flexibility in row by row pointer, thus we need to allocate memory space this way
   png_bytepp row_ptr = (png_bytepp)malloc(sizeof(png_bytep) * height);
-  for (int y=0; y<height; ++y)
+  for (png_uint_32 y=0; y<height; ++y)
   {
     row_ptr[y] = (png_bytep)malloc(rowbytes);
   }
   // read image data
   png_read_image(png_ptr, row_ptr);
-
+  
   // clear png resource
   png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
 
@@ -165,6 +165,5 @@ png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_heig
   {
     *rst_height = height;
   }
-
   return row_ptr;
 }

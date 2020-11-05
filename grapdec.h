@@ -9,5 +9,5 @@
 #include "gfx.h"
 #include <png.h>
 //uint8_t **(*EscreveNoEcra)(uint8_t **matrix, int32_t width, int32_t height);
-uint8_t **JanelaEescreve(uint8_t **matrix, int32_t width, int32_t height, const int8_t *title);
+png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title);
 #endif

@@ -20,23 +20,23 @@ int32_t main(int argc, char *argv[]){
     uint32_t favblock;
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
-        ext = strchr(args.decode_arg, '.');
+        ext = (int8_t *)strchr(args.decode_arg, '.');
         if(!ext){
             dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
         }else{
             dprintf(standartout,"\nExtension is %s",ext+1);
-            if (!strcmp(ext+1, "png")){
+            if (!strcmp((const char *)ext+1, "png")){
                 //uint8_t *done;
                 png_bytepp matrix;
-                int32_t *rst_rowbytes;
-                int32_t *rst_width;
-                int32_t *rst_height;
+                uint32_t *rst_rowbytes;
+                uint32_t *rst_width;
+                uint32_t *rst_height;
                 matrix = readPNG(args.decode_arg,rst_rowbytes,rst_width, rst_height);
                 
                 
-            }else if (!strcmp(ext+1, "jpg")){
+            }else if (!strcmp((const char *)ext+1, "jpg")){
                 
-            }else if (!strcmp(ext+1, "gif")){
+            }else if (!strcmp((const char *)ext+1, "gif")){
                 
             }else{
                 dprintf(standarterr,"[Error]: the file you are trying to open is not supported");

@@ -7,6 +7,6 @@
 #include <stdlib.h>
 #include <stdarg.h>
 #include "funcaux.h"
-png_bytepp *readPNG(char *file, int* rst_rowbytes, int* rst_width, int* rst_height);
+png_bytepp readPNG(char *file, uint32_t* rst_rowbytes, uint32_t* rst_width, uint32_t* rst_height);
 
 #endif
