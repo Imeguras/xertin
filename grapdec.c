@@ -1,5 +1,5 @@
 #include "grapdec.h"
-png_bytepp (*JanelaEescrevePTR)(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title);
+
 png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title){
     gfx_open(width, height, (const char *)title);
     for (size_t y = 0; y < height; y++)

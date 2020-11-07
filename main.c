@@ -29,14 +29,16 @@ int32_t main(int argc, char *argv[]){
             if (!strcmp((const char *)ext+1, "png")){
                 //uint8_t *done;
                  
-                int32_t rowbytes=0;
-                uint32_t pwidth=0, pheight=0;
-                png_bytepp matrix = readPNG(args.decode_arg,&rowbytes,&pwidth, &pheight);
+                size_t rowbytes=0;
+                png_uint_32 pwidth=0, pheight=0;
+                png_bytepp matrix= NULL;
+                matrix=(png_bytepp)malloc(1);
+                matrix= readPNG(matrix,args.decode_arg,&rowbytes,&pwidth, &pheight);
                 //free_image_data(matrix,pheight);
-                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
-                JanelaEescrevePTR=&JanelaEescreve;
-                JanelaEescreve(matrix, pwidth, pheight, args.decode_arg);
-                free_image_data(matrix, pheight);
+                //png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
+                //JanelaEescrevePTR=&JanelaEescreve;
+                //JanelaEescrevePTR(matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
+                //free_image_data(matrix, pheight);
 
             }else if (!strcmp((const char *)ext+1, "jpg")){
                 

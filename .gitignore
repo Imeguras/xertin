@@ -5,3 +5,5 @@ xertim
 *.bak
 args.h
 args.c
+xertinWorkspace.code-workspace
+.vscode

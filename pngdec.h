@@ -1,12 +1,31 @@
 #ifndef PNGDEC_IMPLEMENTED
 #define PNGDEC_IMPLEMENTED
-#include <png.h>
+#include <stdlib.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <stdlib.h>
+#include <string.h>
 #include <stdarg.h>
+#include <png.h>
+#include <zlib.h>
 #include "funcaux.h"
-png_bytepp readPNG(char *file, int32_t* rst_rowbytes, uint32_t* rst_width, uint32_t* rst_height);
-void free_image_data(png_bytepp data, int height);
+typedef union 
+{
+    const uint8_t *filen;
+    FILE *filep;
+}fich;
+//TODO
+#define PNG_READ_SETJMP(png_ptr, info_ptr, fp) \
+  if (setjmp(png_jmpbuf(png_ptr))){\
+    fprintf(stderr, "error png's set jmp for read\n");\
+    png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);\
+    fclose(fp);     \
+    fp = NULL;      \
+    return NULL;    \
+  }
+
+void readpng_version_info();
+void readpng_verificar(fich *file, size_t* rwb, uint32_t wid, uint32_t hei);
+int16_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
+void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass);
 #endif

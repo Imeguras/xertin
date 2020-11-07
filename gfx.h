@@ -26,26 +26,26 @@ void gfx_line( int x1, int y1, int x2, int y2 );
 void gfx_color( int red, int green, int blue );
 
 /* Clear the graphics window to the background color. */
-void gfx_clear();
+void gfx_clear(void);
 
 /* Change the current background color. */
 void gfx_clear_color( int red, int green, int blue );
 
 /* Wait for the user to press a key or mouse button. */
-char gfx_wait();
+char gfx_wait(void);
 
 /* Return the X and Y coordinates of the last event. */
-int gfx_xpos();
-int gfx_ypos();
+int gfx_xpos(void);
+int gfx_ypos(void);
 
 /* Return the X and Y dimensions of the window. */
-int gfx_xsize();
-int gfx_ysize();
+int gfx_xsize(void);
+int gfx_ysize(void);
 
 /* Check to see if an event is waiting. */
-int gfx_event_waiting();
+int gfx_event_waiting(void);
 
 /* Flush all previous output to the window. */
-void gfx_flush();
+void gfx_flush(void);
 
 #endif
