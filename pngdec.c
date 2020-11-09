@@ -1,218 +1,12 @@
 #include "pngdec.h"
 
- /*png_bytepp readPNG(png_bytepp matrix, char *file, size_t* rst_rowbytes, png_uint_32* rst_width, png_uint_32* rst_height){
-  static png_structp png_ptr;
-  static png_infop info_ptr;
-  uint8_t iheader[8];
-  png_uint_32 width, height;
-  png_byte bit_depth, color_type, interlace_type;
-  FILE *fp;
-  
-  if ((fp = fopen(file, "rb")) == NULL){
-    abort_("Welp something got fucked check the IO");
-  }
-  png_init_io(png_ptr,fp);
-  
-  const uint32_t cmp_number = 8;
-  if (fread(iheader, 1, cmp_number, fp) != cmp_number){
-    fprintf(stderr, "read %s file error", file);
-    // close file
-    fclose(fp);
-    fp = NULL;
-    return NULL;
-  }  
-  
-  // check whether magic number matches, and thus it's png file
-  if (png_sig_cmp(iheader, 0, cmp_number) != 0)
-  {
-    // it's not PNG file
-    fprintf(stderr, "%s file is not recognized as png file\n", file);
-    // close file
-    fclose(fp);
-    fp = NULL;
-    return NULL;
-  }
-  
-  png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
-  png_set_sig_bytes(png_ptr, 8);
-  if (png_ptr == NULL){
-    // cannot create png structure
-      fprintf(stderr, "cannot create png structure\n");
-    // close file
-    fclose(fp);
-    fp = NULL;
-    return NULL;
-  }
-  info_ptr = png_create_info_struct(png_ptr);
-  if (info_ptr == NULL)
-  {
-    fprintf(stderr, "cannot create png info structure\n");
-
-    // clear png resource
-    png_destroy_read_struct(&png_ptr, (png_infopp)NULL, (png_infopp)NULL);
-    
-    // close file
-    fclose(fp);
-    fp = NULL;
-    return NULL;
-  }
-  #define PNG_READ_SETJMP(png_ptr, info_ptr, fp) \
-  /* set jmp */ \
- /* if (setjmp(png_jmpbuf(png_ptr)))  \
-  { \
-    fprintf(stderr, "error png's set jmp for read\n"); \
-                                              \
-    /* clear png resource */                  \
-   /* png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);   \
-                                                                      \
-    /* close file */ \
- /*   fclose(fp);     \
-    fp = NULL;      \
-    return NULL;    \
-  }
-     PNG_READ_SETJMP(png_ptr, info_ptr, fp)
-
-  // set up input code
-  png_init_io(png_ptr, fp);
-  // let libpng knows that we have read first initial bytes to check whether it's png file
-  // thus libpng knows some bytes are missing
- 
-
-
-       
-  // read file info up to image data
-  png_read_info(png_ptr, info_ptr);
-  
-  // get info of png image
-  width = png_get_image_width(png_ptr, info_ptr);
-  height = png_get_image_height(png_ptr, info_ptr);
-  bit_depth = png_get_bit_depth(png_ptr, info_ptr);
-  color_type = png_get_color_type(png_ptr, info_ptr);
-  interlace_type = png_get_interlace_type(png_ptr, info_ptr);
-  png_byte channels = png_get_channels(png_ptr, info_ptr);
-  size_t rowbytes = png_get_rowbytes(png_ptr, info_ptr);
-
-   if (color_type == PNG_COLOR_TYPE_PALETTE)
-        png_set_expand(png_ptr);
-    if (color_type == PNG_COLOR_TYPE_GRAY && bit_depth < 8)
-        png_set_expand(png_ptr);
-    if (png_get_valid(png_ptr, info_ptr, PNG_INFO_tRNS))
-        png_set_expand(png_ptr);
-    if (bit_depth == 16)
-        png_set_strip_16(png_ptr);
-    if (color_type == PNG_COLOR_TYPE_GRAY ||
-        color_type == PNG_COLOR_TYPE_GRAY_ALPHA)
-        png_set_gray_to_rgb(png_ptr);
-            double  gamma;
-      
-    /*    if (png_get_gAMA(png_ptr, info_ptr, &gamma))
-            png_set_gamma(png_ptr, display_exponent, gamma);
-*/
-
-
- /* printf("width = %d\n", width);
-  printf("height = %d\n", height);
-  printf("bit_depth = %d\n", bit_depth);
-  switch (color_type)
-  {
-    case PNG_COLOR_TYPE_GRAY:
-      printf("color type = 'PNG_COLOR_TYPE_GRAY' (bit depths 1, 2, 4, 8, 16)\n");
-      break;
-    case PNG_COLOR_TYPE_GRAY_ALPHA:
-      printf("color type = 'PNG_COLOR_TYPE_GRAY_ALPHA' (bit depths 8, 16)\n");
-      break;
-    case PNG_COLOR_TYPE_PALETTE:
-      printf("color type = 'PNG_COLOR_TYPE_PALETTE' (bit depths 1, 2, 4, 8)\n");
-      break;
-    case PNG_COLOR_TYPE_RGB:
-      printf("color type = 'PNG_COLOR_TYPE_RGB' (bit depths 8, 16)\n");
-      break;
-    case PNG_COLOR_TYPE_RGB_ALPHA:
-      printf("color type = 'PNG_COLOR_TYPE_RGB_ALPHA' (bit depths 8, 16)\n");
-      break;
-  }
-  switch (interlace_type)
-  {
-    case PNG_INTERLACE_NONE:
-      printf("interlace type = none\n");
-      break;
-    case PNG_INTERLACE_ADAM7:
-      printf("interlace type = ADAM7\n");
-      break;
-  }
-  switch (channels)
-  {
-    case 1:
-      printf("channels = %d (GRAY, PALETTE)\n", channels);
-      break;
-    case 2:
-      printf("channels = %d (GRAY_ALPHA)\n", channels);
-      break;
-    case 3:
-      printf("channels = %d (RGB)\n", channels);
-      break;
-    case 4:
-      printf("channels = %d (RGB_ALPHA or RGB + filter byte)\n", channels);
-      break;
-  }
-  printf("rowbytes = %ld\n", rowbytes);
-  /*png_bytep matrixgiant;
-  if ((matrixgiant = (png_bytep)malloc(rowbytes*height))!= NULL){
-      png_destroy_read_struct(&png_ptr, &info_ptr, (png_infopp)NULL);
-      return NULL;
-  }
-
-  for (size_t i = 0; i < height; i++)
-  {
-      matrix[i] = matrixgiant + i*rowbytes;
-  }*/
-  
-
-  // read image data
-  //png_read_image(png_ptr, matrix);
-  
-  // clear png resource
- /* png_read_end(png_ptr,info_ptr);
-  // close file
-  fclose(fp);
-  fp = NULL;
-
-  // return results
-  if (rst_rowbytes != NULL)
-  {
-    *rst_rowbytes = (size_t)rowbytes;
-  }
-  if (rst_width != NULL)
-  {
-    *rst_width = width;
-  }
-  if (rst_height != NULL)
-  {
-    *rst_height = height;
-  }
-
-  return matrix;
-}
-
-
-void free_image_data(png_bytepp data, int height)
-{
-  for (int y=0; y<height; ++y)
-  {
-    free(data[y]);
-    data[y] = NULL;
-  }
-  free(data);
-}*/
-
-
 void readpng_version_info(){
         fprintf(stderr, "   Compiled with libpng %s; using libpng %s.\n",
           PNG_LIBPNG_VER_STRING, png_libpng_ver);
         fprintf(stderr, "   Compiled with zlib %s; using zlib %s.\n",
           ZLIB_VERSION, zlib_version);
 }
-void readpng_verificar(fich *file, size_t* rwb, uint32_t wid, uint32_t hei){
+png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
     //RARE TO USE
     png_voidp per_chunck_ptr; 
     //
@@ -279,15 +73,25 @@ void readpng_verificar(fich *file, size_t* rwb, uint32_t wid, uint32_t hei){
        described in the appropriate manual page.
     */
    //TODO THIS IS DIFFERENTE FOR ENCODE
-    #if (PNG_LIBPNG_VER >= 10504)
-      png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, SPECIFIC_LIBPNG_SRGB_GAMA_MULTIPLIER); 
-      //TODO CHECK THIS LATER
-      png_set_alpha_mode(png_ptr, PNG_ALPHA_STANDARD, PNG_DEFAULT_sRGB);
-   
-     
+	#if PNG_LIBPNG_VER >= 10504
+		 png_set_alpha_mode(png_ptr, PNG_ALPHA_STANDARD, PNG_DEFAULT_sRGB);
+    #else
+		png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, 1.0/PNG_DEFAULT_sRGB);
     #endif
-   
-
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SCALE_16, NULL); 
+    *rwb=png_get_rowbytes(png_ptr, info_ptr);
+	*wid=png_get_image_width(png_ptr, info_ptr);
+	*hei=png_get_image_height(png_ptr, info_ptr);
+	png_bytepp row_pointers = png_malloc(png_ptr,(*hei)*(sizeof (png_bytep)));
+	row_pointers = png_get_rows(png_ptr, info_ptr);
+	for (uint32_t i=0; i<hei; ++i){
+		row_pointers[i]=NULL;
+		row_pointers[i]=png_malloc(png_ptr, *wid);
+	}
+	png_set_rows(png_ptr, info_ptr, &row_pointers);
+	png_read_end(png_ptr, info_ptr);
+	fclose(fp);
+	return row_pointers;
 }
 
 //TODO
@@ -318,4 +122,13 @@ void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass){
        not be sure that the preceding pass is just 'pass-1'; if you really need to know what the last pass is record (row,pass) from the callback  and  use  the  last
        recorded value each time.*/
 }
+void pngread_destroy(png_bytepp matrix, uint32_t hei){
+	for (uint32_t i = 0; i < hei; ++i){
+		free(matrix[hei]);
+		matrix[hei]=NULL;
+	}
+	free(matrix);
+	matrix=NULL;
 
+	
+}

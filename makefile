@@ -4,7 +4,7 @@
 #
 
 # Bibliotecas a incluir
-LIBS=-lX11 -lpng 
+LIBS=-lX11 -lpng -lz -lpthread
 
 # Flags para o compilador
 CFLAGS=-Wall -W -g -Wmissing-prototypes 
@@ -12,7 +12,7 @@ CFLAGS=-Wall -W -g -Wmissing-prototypes
 # Flags para a indentacao de codigo 
 IFLAGS=-br -brs -npsl -ce -cli4
 
-
+DIR=/home/micron/TrabalhosMov/TrabalhosC/xertim/xertin
 # nome do executavel 
 PROGRAM=xertin
 
@@ -49,7 +49,7 @@ ${PROGRAM_OPT}.h: ${PROGRAM_OPT}.ggo
 	gengetopt < ${PROGRAM_OPT}.ggo --file-name=${PROGRAM_OPT}
 
 clean:
-	rm -f obj/*.o core.* *~ ${PROGRAM} *.bak ${PROGRAM_OPT}.h ${PROGRAM_OPT}.c
+	rm -f obj/*.o coredump/*.coredump *~ ${PROGRAM} *.bak ${PROGRAM_OPT}.h ${PROGRAM_OPT}.c
 
 docs: Doxyfile
 	doxygen Doxyfile
@@ -60,5 +60,7 @@ Doxyfile:
 indent:
 	indent ${IFLAGS} *.c *.h
 
+nomedofich :=  Xertin_$(shell date +d%dm%my%y-%Hh%Mm%Ss).coredump
 codedump:
-	
+	coredumpctl -o ${nomedofich} dump ${DIR}/xertin
+	mv ${nomedofich} ${DIR}/coredump

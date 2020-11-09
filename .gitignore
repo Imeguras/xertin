@@ -1,5 +1,5 @@
 *.o
-core.*
+*.coredump
 *~
 xertim
 *.bak
