@@ -6,20 +6,20 @@ void readpng_version_info(){
         fprintf(stderr, "   Compiled with zlib %s; using zlib %s.\n",
           ZLIB_VERSION, zlib_version);
 }
-png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
+png_bytepp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
     //RARE TO USE
+	
     png_voidp per_chunck_ptr; 
-    //
-    FILE *fp=file->filep;
-    if (fp==NULL){
-      if ((fp = fopen(file, "rb")) == NULL){
-        fp = NULL;
-        abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
-      }
+    size_t readnum; 
+    FILE *fp;
+    if ((fp = fopen(file, "rb")) == NULL){
+      fp = NULL;
+      abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
     }
-    uint8_t *pop;
-    
-    if(fread(pop,sizeof(uint8_t),GENERAL_PNG_SIG_SIZE,fp)!=GENERAL_PNG_SIG_SIZE){
+    int8_t *pop;
+    pop=malloc(GENERAL_PNG_SIG_SIZE * sizeof(char));
+    readnum=fread(pop,sizeof(char),GENERAL_PNG_SIG_SIZE,fp);
+    if(readnum!=GENERAL_PNG_SIG_SIZE){
       fclose(fp);
       //ERR 5
       fp = NULL;
@@ -33,32 +33,33 @@ png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* h
       //err 6
       exit(6);
     }
-    png_structp png_ptr;
-    if(png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL)==NULL){
+    free(pop);
+    png_structp png_ptr = png_create_read_struct(PNG_LIBPNG_VER_STRING, NULL, NULL, NULL);
+    if(png_ptr==NULL){
       fclose(fp);
       fp= NULL;
       fprintf(stderr, "TODO");
       exit(7);
     }
-    png_infop info_ptr;
-    if (info_ptr= png_create_info_struct(info_ptr)){
+     png_infop info_ptr= png_create_info_struct(png_ptr);
+    if (info_ptr== NULL){
       png_destroy_read_struct(&png_ptr, &info_ptr, NULL);
       fclose(fp);
       fp=NULL;
       fprintf(stderr, "TODO");
       exit(7);
     }
-    PNG_READ_SETJMP(png_ptr, info_ptr, fp)
+    //PNG_READ_SETJMP(png_ptr, info_ptr, fp)
     png_init_io(png_ptr,fp);
     png_set_sig_bytes(png_ptr,GENERAL_PNG_SIG_SIZE);
     png_set_compression_buffer_size(png_ptr, SPECIFIC_LIBPNG_ZLIB_BUFFER_COMPRESSION_BYTE_SIZE);
     //TODO HANDLING DE ERROS DO FICHEIRO
     png_set_crc_action(png_ptr, PNG_CRC_DEFAULT, PNG_CRC_DEFAULT);
     //TODO CHUNKS CUSTOM?
-    png_get_user_chunk_ptr(png_ptr);
-    png_set_read_user_chunk_fn(png_ptr, per_chunck_ptr,readpng_chunk_callback);
+    per_chunck_ptr=png_get_user_chunk_ptr(png_ptr);
+    png_set_read_user_chunk_fn(png_ptr, per_chunck_ptr,(png_user_chunk_ptr)readpng_chunk_callback);
     png_set_read_status_fn(png_ptr, pngread_whilerow);
-    //TODO HANDLING DE CHUNKS COMPLETAMENTE DESCONHECIDOS
+    //TODO HANDLING DE CHUNKS COMPLETAMlENTE DESCONHECIDOS
     png_set_keep_unknown_chunks(png_ptr, PNG_HANDLE_CHUNK_IF_SAFE, NULL, 0);
     png_set_user_limits(png_ptr, SPECIFIC_LIBPNG_READ_WIDTH_MAX, SPECIFIC_LIBPNG_READ_HEIGHT_MAX);
     //TODO png_set_chunk_cache_max(png_ptr, user_chunk_cache_max);  0x7fffffffL unlimited 
@@ -74,7 +75,7 @@ png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* h
     */
    //TODO THIS IS DIFFERENTE FOR ENCODE
 	#if PNG_LIBPNG_VER >= 10504
-		 png_set_alpha_mode(png_ptr, PNG_ALPHA_STANDARD, PNG_DEFAULT_sRGB);
+		png_set_alpha_mode(png_ptr, PNG_ALPHA_STANDARD, PNG_DEFAULT_sRGB);
     #else
 		png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, 1.0/PNG_DEFAULT_sRGB);
     #endif
@@ -84,25 +85,43 @@ png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* h
 	*hei=png_get_image_height(png_ptr, info_ptr);
 	png_bytepp row_pointers = png_malloc(png_ptr,(*hei)*(sizeof (png_bytep)));
 	row_pointers = png_get_rows(png_ptr, info_ptr);
-	for (uint32_t i=0; i<hei; ++i){
+	for (uint32_t i=0; i<(*hei); ++i){
 		row_pointers[i]=NULL;
 		row_pointers[i]=png_malloc(png_ptr, *wid);
 	}
-	png_set_rows(png_ptr, info_ptr, &row_pointers);
-	png_read_end(png_ptr, info_ptr);
-	fclose(fp);
+	png_set_rows(png_ptr, info_ptr, row_pointers);
+	//png_read_end(png_ptr, info_ptr);
+	
+    fclose(fp);
 	return row_pointers;
 }
-
+png_bytepp readpng_archverificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
+  FILE *fp;
+  if ((fp = fopen(file, "rb")) == NULL){
+        fp = NULL;
+        abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
+  }
+    int8_t *pop;
+    //pop=malloc(GENERAL_PNG_SIG_SIZE * sizeof(char));
+    size_t readnum; 
+    readnum=fread(pop,GENERAL_PNG_SIG_SIZE,sizeof(char),fp);
+    printf("%s",pop);
+    fclose(fp);
+    return NULL;
+} 
 //TODO
 int16_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk){
-              /* The unknown chunk structure contains your
+        /* The unknown chunk structure contains your
                  chunk data, along with similar data for any other
                  unknown chunks: */
-                  png_byte name[5];
-                  png_byte *data;
-                  size_t size;
-
+              //    png_byte name;
+            //      png_byte *data;
+          //        size_t size;
+				//size=chunk->size;
+				//data=chunk->data;
+				//name=strcpy(name, (char *)chunk->name);
+				//free(name);
+				//printf("DATA %s , %ld",data, size);
               /* Note that libpng has already taken care of
                  the CRC handling */
 

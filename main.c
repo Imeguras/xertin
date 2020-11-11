@@ -26,24 +26,24 @@ int32_t main(int argc, char *argv[]){
             dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
         }else{
             dprintf(standartout,"\nExtension is %s\n",ext+1);
-            if (!strcmp((const char *)ext+1, "png")){
+            if (!strcmp((char *)ext+1, "png")){
                 //uint8_t *done;
                  
                 size_t rowbytes=0;
                 png_uint_32 pwidth=0, pheight=0;
                 png_bytepp matrix= NULL;
-                //matrix=(png_bytepp)malloc(1);
-                //matrix= readPNG(matrix,args.decode_arg,&rowbytes,&pwidth, &pheight);
-                matrix=readpng_verificar(args.decode_arg,&rowbytes, &pwidth, &pheight);
-                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
+            
+                //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
+                matrix=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
+                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, int8_t *);
                 JanelaEescrevePTR=&JanelaEescreve;
-                JanelaEescrevePTR(matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
+                JanelaEescrevePTR(matrix, pwidth, pheight, (int8_t *)args.decode_arg);
                 pngread_destroy(matrix, pheight);
                 //free_image_data(matrix, pheight);
 
-            }else if (!strcmp((const char *)ext+1, "jpg")){
+            }else if (!strcmp((char *)ext+1, "jpg")){
                 
-            }else if (!strcmp((const char *)ext+1, "gif")){
+            }else if (!strcmp((char *)ext+1, "gif")){
                 
             }else{
                 dprintf(standarterr,"[Error]: the file you are trying to open is not supported");

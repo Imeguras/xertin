@@ -9,9 +9,9 @@
 #include <png.h>
 #include <zlib.h>
 #include "funcaux.h"
-typedef union 
+typedef struct 
 {
-    const uint8_t *filen;
+    char *filen;
     FILE *filep;
 }fich;
 //TODO
@@ -25,7 +25,8 @@ typedef union
   }
 
 void readpng_version_info(void);
-png_bytepp readpng_verificar(fich *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
+png_bytepp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
+png_bytepp readpng_archverificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
 int16_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass);
 void pngread_destroy(png_bytepp matrix, uint32_t hei);
