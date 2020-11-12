@@ -14,6 +14,11 @@ typedef struct
     char *filen;
     FILE *filep;
 }fich;
+typedef struct{
+    png_bytepp matrix;
+    png_structp png_ptr;
+    png_infop info_ptr;
+}pngimp;
 //TODO
 #define PNG_READ_SETJMP(png_ptr, info_ptr, fp) \
   if (setjmp(png_jmpbuf(png_ptr))){\
@@ -24,10 +29,10 @@ typedef struct
     return NULL;    \
   }
 
+
 void readpng_version_info(void);
-png_bytepp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
-png_bytepp readpng_archverificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
+pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
 int16_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass);
-void pngread_destroy(png_bytepp matrix, uint32_t hei);
+void pngread_destroy(pngimp matrix, uint32_t hei);
 #endif

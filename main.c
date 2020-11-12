@@ -15,12 +15,14 @@
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 uint8_t standartout=STDOUT_FILENO;
 uint8_t standarterr=STDERR_FILENO;
+
 int32_t main(int argc, char *argv[]){
     struct gengetopt_args_info args; 
     cmdline_parser(argc,argv, &args);
     uint32_t favblock;
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
+        
         ext = (int8_t *)strchr(args.decode_arg, '.');
         if(!ext){
             dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
@@ -31,14 +33,14 @@ int32_t main(int argc, char *argv[]){
                  
                 size_t rowbytes=0;
                 png_uint_32 pwidth=0, pheight=0;
-                png_bytepp matrix= NULL;
-            
+                
+                pngimp image={NULL, NULL, NULL};
                 //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
-                matrix=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
+                image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
                 png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, int8_t *);
                 JanelaEescrevePTR=&JanelaEescreve;
-                JanelaEescrevePTR(matrix, pwidth, pheight, (int8_t *)args.decode_arg);
-                pngread_destroy(matrix, pheight);
+                JanelaEescrevePTR(image.matrix, pwidth, pheight, (int8_t *)args.decode_arg);
+                pngread_destroy(image, pheight);
                 //free_image_data(matrix, pheight);
 
             }else if (!strcmp((char *)ext+1, "jpg")){
@@ -69,7 +71,5 @@ uint8_t vreadable(char *string,uint32_t *favouredsize){
         return 1;
     }else{
         return 0;
-    }
-    
+    }   
 }
-

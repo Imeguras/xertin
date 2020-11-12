@@ -64,3 +64,4 @@ nomedofich :=  Xertin_$(shell date +d%dm%my%y-%Hh%Mm%Ss).coredump
 codedump:
 	coredumpctl -o ${nomedofich} dump ${DIR}/xertin
 	mv ${nomedofich} ${DIR}/coredump
+	gdb ${PROGRAM} coredump/${nomedofich}
