@@ -6,14 +6,16 @@ png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, co
     hey=fopen("new.txt", "wb");
     for (size_t y = 0; y < height; y++)
     {
-        for (size_t x = 0; x < width; x++)
-        {
-            uint8_t compressed = matrix[y][x];
-            //fprintf(hey, "\nCOLOR %d, %d %d", compressed & 0xFF, compressed>>8 & 0xFF, compressed>>16 &  0xFF);
+        for (size_t x = 0; x < (width*3); x++){
+            uint8_t red = matrix[y][x];
+            uint8_t green = matrix[y][x+1];
+            uint8_t blue = matrix[y][x+2];
+            fprintf(hey, "\nCOLOR %d, %d %d", red, green, blue);
             
-            gfx_color(compressed & 0xFF, compressed>>8 & 0xFF, compressed>>16 &  0xFF);
-            gfx_point(x, y);
-            
+            gfx_color(red, green, blue);
+            size_t realx= x/3; 
+            gfx_point(realx, y);
+            x=x+3;
         }
     }
     

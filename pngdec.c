@@ -16,7 +16,7 @@ void readpng_version_info(){
 }
 pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		//RARE TO USE
-	
+
 		png_voidp per_chunck_ptr; 
 		size_t readnum; 
 		FILE *fp;
@@ -57,21 +57,23 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 			fprintf(stderr, "TODO");
 			exit(7);
 		}
+		
 		//PNG_READ_SETJMP(png_ptr, info_ptr, fp)
 		png_init_io(png_ptr,fp);
 		png_set_sig_bytes(png_ptr,GENERAL_PNG_SIG_SIZE);
 		png_set_compression_buffer_size(png_ptr, SPECIFIC_LIBPNG_ZLIB_BUFFER_COMPRESSION_BYTE_SIZE);
 		//TODO HANDLING DE ERROS DO FICHEIRO
 		png_set_crc_action(png_ptr, PNG_CRC_DEFAULT, PNG_CRC_DEFAULT);
-		png_read_info(png_ptr, info_ptr);
+		//png_read_info(png_ptr, info_ptr);
 		//png_read_update_info(png_ptr,info_ptr);
-		
+
 		//TODO CHUNKS CUSTOM?
 		per_chunck_ptr=png_get_user_chunk_ptr(png_ptr);
 		png_set_read_user_chunk_fn(png_ptr, per_chunck_ptr,(png_user_chunk_ptr)readpng_chunk_callback);
 		png_set_read_status_fn(png_ptr, pngread_whilerow);
 		//TODO HANDLING DE CHUNKS COMPLETAMlENTE DESCONHECIDOS
 		png_set_keep_unknown_chunks(png_ptr, PNG_HANDLE_CHUNK_NEVER, unused_chunks, sizeof(unused_chunks)/5);
+		//png_set_keep_unknown_chunks(png_ptr,PNG_HANDLE_CHUNK_IF_SAFE, NULL, 0);
 		png_set_user_limits(png_ptr, SPECIFIC_LIBPNG_READ_WIDTH_MAX, SPECIFIC_LIBPNG_READ_HEIGHT_MAX);
 		//TODO png_set_chunk_cache_max(png_ptr, user_chunk_cache_max);  0x7fffffffL unlimited 
 		//png_set_chunk_malloc_max(png_ptr, user_chunk_malloc_max);
@@ -90,17 +92,19 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		#else
 		png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, 1.0/PNG_DEFAULT_sRGB);
 		#endif
+	
 	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_SCALE_16, NULL); 
 	
 	*rwb=png_get_rowbytes(png_ptr, info_ptr);
 	*wid=png_get_image_width(png_ptr, info_ptr);
 	*hei=png_get_image_height(png_ptr, info_ptr);
 	png_bytepp row_pointers = png_malloc(png_ptr,(*hei)*(sizeof (png_bytep)));
-	row_pointers = png_get_rows(png_ptr, info_ptr);
+	
 	for (uint32_t i=0; i<(*hei); ++i){
 		row_pointers[i]=NULL;
 		row_pointers[i]=png_malloc(png_ptr, *wid);
 	}
+	row_pointers = png_get_rows(png_ptr, info_ptr);
 	png_set_rows(png_ptr, info_ptr, row_pointers);
 	//png_read_end(png_ptr, info_ptr);
 		fclose(fp);
@@ -136,12 +140,23 @@ void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass){
 		printf("Reading row:%d, pass:%d\n", row, pass);
 }
 void pngread_destroy(pngimp matrix, uint32_t hei){
-	//png_destroy_info_struct(matrix.png_ptr, &matrix.info_ptr);
-	//png_destroy_read_struct(&matrix.png_ptr,&matrix.info_ptr, NULL);
-	for (uint32_t i = 0; i < hei; ++i){
-		free(matrix.matrix[hei]);
-		matrix.matrix[hei]=NULL;
+	png_destroy_info_struct(matrix.png_ptr, &matrix.info_ptr);
+	png_destroy_read_struct(&matrix.png_ptr,&matrix.info_ptr, NULL);
+	/*for (uint32_t i = 0; i < hei; ++i){
+		if(matrix.matrix[hei]!=NULL){
+			free(matrix.matrix[hei]);
+			matrix.matrix[hei]=NULL;
+		}else{
+			fprintf(stderr, "ItS ALREADY CLEANED");
+		}
+		
 	}
-	free(matrix.matrix);
-	matrix.matrix=NULL;
+	if(matrix.matrix!=NULL){
+		free(matrix.matrix);
+		matrix.matrix=NULL;
+	}else
+	{
+		fprintf(stderr, "ItS ALREADY CLEANED");
+	}*/
+	
 }
