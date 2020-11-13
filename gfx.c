@@ -9,11 +9,6 @@ Version 3, 11/07/2012 - Now much faster at changing colors rapidly.
 Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
 */
 
-#include <X11/Xlib.h>
-#include <unistd.h>
-#include <stdio.h>
-#include <stdlib.h>
-
 #include "gfx.h"
 
 /*
@@ -80,7 +75,12 @@ void gfx_open( int width, int height, const char *title )
 			break;
 	}
 }
-
+void gfx_resize(uint32_t width, uint32_t height){
+	XResizeWindow(gfx_display, gfx_window, width, height);
+}
+int32_t gfx_close(void){
+	return (int32_t)XDestroyWindow(gfx_display, gfx_window);
+}
 /* Draw a single point at (x,y) */
 
 void gfx_point( int x, int y )
@@ -138,7 +138,6 @@ void gfx_clear_color( int r, int g, int b )
 	attr.background_pixel = color.pixel;
 	XChangeWindowAttributes(gfx_display,gfx_window,CWBackPixel,&attr);
 }
-
 int gfx_event_waiting()
 {
        XEvent event;
@@ -162,17 +161,53 @@ int gfx_event_waiting()
        }
 }
 
-/* Wait for the user to press a key or mouse button. */
 
-char gfx_wait()
-{
+uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
+	uint8_t keycodereceived; 
 	XEvent event;
-
 	gfx_flush();
+	while(keycodereceived!=keycode) {
+		XNextEvent(gfx_display,&event);
+		switch (event.type){
+		case KeyPress:
+			saved_xpos = event.xkey.x;
+			saved_ypos = event.xkey.y;
+			*x=saved_xpos;
+			*y=saved_ypos;
+			keycodereceived=XLookupKeysym(&event.xkey, 0);
+			break;
+		case ButtonPress:
+		    saved_xpos = event.xkey.x;
+			saved_ypos = event.xkey.y;
+			*x=saved_xpos;
+			*y=saved_ypos;
+			//printf("AHHHHHH%u", keycode);
+			keycodereceived=event.xkey.keycode;
+			break;
+		case ResizeRequest:
+			*x=event.xresizerequest.width;
+			*y=event.xresizerequest.height;
+			return 1; 
+			break;
+		case DestroyNotify:
+			return 0; 
+			break;
+		default:
+			break;
+		}
+		
+		
+			
+		
+	}
 
+}
+/* Wait for the user to press a key or mouse button. */
+uint8_t gfx_wait(){
+	XEvent event;
+	gfx_flush();
 	while(1) {
 		XNextEvent(gfx_display,&event);
-
 		if(event.type==KeyPress) {
 			saved_xpos = event.xkey.x;
 			saved_ypos = event.xkey.y;

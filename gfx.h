@@ -12,10 +12,16 @@ Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
 
 #ifndef GFX_H
 #define GFX_H
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <X11/Xlib.h>
+#include <X11/Xutil.h>
+#include <unistd.h>
+#include <stdint.h>
 /* Open a new graphics window. */
 void gfx_open( int width, int height, const char *title );
-
+void gfx_resize(uint32_t width, uint32_t height);
+int32_t gfx_close(void);
 /* Draw a point at (x,y) */
 void gfx_point( int x, int y );
 
@@ -32,7 +38,8 @@ void gfx_clear(void);
 void gfx_clear_color( int red, int green, int blue );
 
 /* Wait for the user to press a key or mouse button. */
-char gfx_wait(void);
+uint8_t gfx_wait(void);
+uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y);
 
 /* Return the X and Y coordinates of the last event. */
 int gfx_xpos(void);
