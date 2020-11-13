@@ -32,7 +32,7 @@ typedef struct{
 
 void readpng_version_info(void);
 pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
-int16_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
+int32_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass);
 void pngread_destroy(pngimp matrix, uint32_t hei);
 #endif
