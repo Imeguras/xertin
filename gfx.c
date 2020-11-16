@@ -193,14 +193,13 @@ uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
 			return 0; 
 			break;
 		default:
+		 	for(int i=0; i<2; i++){
+				 fprintf(stdout, "[INFO]DEBUG EVENTO TIPO %d\n", event.type);
+			 }
 			break;
 		}
-		
-		
-			
-		
 	}
-
+	return 0; 
 }
 /* Wait for the user to press a key or mouse button. */
 uint8_t gfx_wait(){

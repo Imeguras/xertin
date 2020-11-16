@@ -19,8 +19,8 @@ PROGRAM=xertin
 # Nome do ficheiro de opcoes do gengetopt (caso exista)
 PROGRAM_OPT=args
 
-PROGRAM_OBJS=main.o funcaux.o pngdec.o grapdec.o gfx.o ${PROGRAM_OPT}.o
-PROGRAM_OBJSDIR=obj/main.o obj/funcaux.o obj/pngdec.o obj/grapdec.o obj/gfx.o obj/${PROGRAM_OPT}.o
+PROGRAM_OBJS=main.o funcaux.o jpegdec.o pngdec.o grapdec.o gfx.o config.o ${PROGRAM_OPT}.o
+PROGRAM_OBJSDIR=obj/main.o obj/funcaux.o obj/pngdec.o obj/jpegdec.o obj/grapdec.o obj/gfx.o obj/${PROGRAM_OPT}.o obj/config.o
 .PHONY: clean
 
 all: ${PROGRAM}
@@ -34,17 +34,20 @@ ${PROGRAM}: ${PROGRAM_OBJS}
 	${CC} ${CFLAGS}-o $@ ${PROGRAM_OBJSDIR} ${LIBS}
 
 # Dependencias 
-main.o: main.c ${PROGRAM_OPT}.h pngdec.h grapdec.h
+main.o: main.c ${PROGRAM_OPT}.h pngdec.h grapdec.h config.h
 ${PROGRAM_OPT}.o: ${PROGRAM_OPT}.c ${PROGRAM_OPT}.h
 funcaux.o: funcaux.c funcaux.h 
-pngdec.o: pngdec.c pngdec.h funcaux.h 
-grapdec.o: grapdec.c grapdec.h gfx.h 
+pngdec.o: pngdec.c pngdec.h funcaux.h config.h args.h
+gifdec.o: gifdec.c gifdec.h funcaux.h config.h args.h
+jpegdec.o: jpegdec.c jpegdec.h funcaux.h config.h args.h
+grapdec.o: grapdec.c grapdec.h gfx.h config.h
 gfx.o: gfx.c gfx.h
-#como compilar .o a partir de .c
+config.o: config.c config.h funcaux.h 
+
+
 %.o : %.c
 	${CC} ${CFLAGS} -c $< -o obj/$@
 
-# Como gerar os ficheiros do gengetopt 
 ${PROGRAM_OPT}.h: ${PROGRAM_OPT}.ggo
 	gengetopt < ${PROGRAM_OPT}.ggo --file-name=${PROGRAM_OPT}
 

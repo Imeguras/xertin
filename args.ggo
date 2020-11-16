@@ -1,9 +1,10 @@
 package "xertim"
 version "0.1"
-purpose "to decode and encode images"
-description "For now its a image decoder, my plan is to be able to encode everything through the command line or a text script"
+purpose "It handles images of all sorts and sizes, in various speeds and complexities"
+description "Well for now it only decodes an image in a fast speed"
 # Options
 option "decode" d "Basic decoding of an image" string typestr="filename" optional
 option "decodetools" D "Provides more tools to decode an image such as zoom, rotate and pan" string typestr="filename" optional
 option "encode" e "Encode an image through shell" string typestr="filename" optional
 option "encodescrypt" - "Encodes an image throught a written text file" string typestr="dirname" optional
+option "verbose" v "Outputs the current tasks, doings or procedures of the machine" optional

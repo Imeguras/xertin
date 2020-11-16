@@ -9,6 +9,8 @@
 #include <png.h>
 #include <zlib.h>
 #include "funcaux.h"
+#include "args.h"
+#include "config.h"
 typedef struct 
 {
     char *filen;
@@ -30,9 +32,10 @@ typedef struct{
   }
 
 
+uint8_t startpng_init(struct gengetopt_args_info args);
 void readpng_version_info(void);
 pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei);
 int32_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk);
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass);
-void pngread_destroy(pngimp matrix, uint32_t hei);
+void pngread_destroy(pngimp matrix);
 #endif

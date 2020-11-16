@@ -11,6 +11,7 @@
 #include "args.h"
 #include "pngdec.h"
 #include "grapdec.h"
+#include "config.h"
 
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 uint8_t standartout=STDOUT_FILENO;
@@ -18,8 +19,12 @@ uint8_t standarterr=STDERR_FILENO;
 
 int32_t main(int argc, char *argv[]){
     struct gengetopt_args_info args; 
+    //TODO VERIFY THAT THIS DOESNT BREAK MAGICALLY!
     cmdline_parser(argc,argv, &args);
     uint32_t favblock;
+    if(!vreadable(SPECIFIC_JSON_DIRECTORY,&favblock)){
+        createjson();
+    }
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
         
@@ -30,17 +35,19 @@ int32_t main(int argc, char *argv[]){
             dprintf(standartout,"\nExtension is %s\n",ext+1);
             if (!strcmp((char *)ext+1, "png")){
                 //uint8_t *done;
-                 
+                if(startpng_init(args)){
+                    fprintf(stderr, "[TODO] something went to shit");
+                }
                 size_t rowbytes=0;
                 png_uint_32 pwidth=0, pheight=0;
                 
                 pngimp image={NULL, NULL, NULL};
                 //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
                 image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
-                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, int8_t *);
+                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
                 JanelaEescrevePTR=&JanelaEescreve;
-                JanelaEescrevePTR(image.matrix, pwidth, pheight, (int8_t *)args.decode_arg);
-                pngread_destroy(image, pheight);
+                JanelaEescrevePTR(image.matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
+                pngread_destroy(image);
                 //free_image_data(matrix, pheight);
 
             }else if (!strcmp((char *)ext+1, "jpg")){
@@ -63,7 +70,9 @@ int32_t main(int argc, char *argv[]){
 uint8_t vreadable(char *string,uint32_t *favouredsize){
     struct stat fs;
     if (stat(string, &fs) == -1) {
+        
         perror("There was a failure in reading the file status");
+        return 0;
         exit(2);
     }
     if (fs.st_mode & R_OK){

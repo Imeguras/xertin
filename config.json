@@ -1,0 +1,25 @@
+{
+	"directories":[
+		{
+			"Workspace": "/home/micron/sav/Trabalhos/xertin",
+			"Objects": "/obj",
+			"Coredumps": "/coredump"
+		}
+	],
+	"images":[
+		{
+			"TransparencyBackground":[
+				{
+					"Size":"1", 
+					"Pixels": "#FFFFFF"
+				}
+			],
+			"FrameBackground":[
+				{
+					"Size":"1",
+					"Pixels":"#FFFFFF"
+				}
+			]
+		}
+	]
+}

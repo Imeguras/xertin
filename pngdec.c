@@ -7,7 +7,17 @@ png_byte unused_chunks[]={
 115,  80,  76,  84, (png_byte) ' ',
 116,  73,  77,  69, (png_byte) ' '
 };
-
+//TODO DOCUMENTATE THIS SCHEIße 
+static uint16_t flags;
+//Returns 0 if everything goes well 
+uint8_t startpng_init(struct gengetopt_args_info args){
+	flags=0; 
+	if (args.verbose_given){
+		flags^=0x1; 
+	}
+	
+	return 0;
+}
 void readpng_version_info(){
 				fprintf(stderr, "   Compiled with libpng %s; using libpng %s.\n",
 					PNG_LIBPNG_VER_STRING, png_libpng_ver);
@@ -15,8 +25,6 @@ void readpng_version_info(){
 					ZLIB_VERSION, zlib_version);
 }
 pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
-		//RARE TO USE
-
 		png_voidp per_chunck_ptr; 
 		size_t readnum; 
 		FILE *fp;
@@ -129,19 +137,25 @@ int32_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk){
 	/* Note that libpng has already taken care of
 	the CRC handling */
 	//TODO COOD
-	printf("[INFO]: Spotted a chunck named %s", chunk->name);
-	
+	png_get_chunk_malloc_max(png_ptr);	
+	if(flags==1){ 
+		printf("[INFO]: Spotted a chunck named %s\n", chunk->name);
+	}
 	//return -n; /* chunk had an error */
 	return 0; /* did not recognize */
 	//return n; /* success */
 }
 //TODO
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass){
+	png_get_copyright(png_ptr);	
+	if(flags==1){ 
 		printf("Reading row:%d, pass:%d\n", row, pass);
+	}
 }
-void pngread_destroy(pngimp matrix, uint32_t hei){
+void pngread_destroy(pngimp matrix){
 	png_destroy_info_struct(matrix.png_ptr, &matrix.info_ptr);
 	png_destroy_read_struct(&matrix.png_ptr,&matrix.info_ptr, NULL);
+	//TODO VERIFY IF EVERYTHINGS FREE'D PROPERLY 
 	/*for (uint32_t i = 0; i < hei; ++i){
 		if(matrix.matrix[hei]!=NULL){
 			free(matrix.matrix[hei]);

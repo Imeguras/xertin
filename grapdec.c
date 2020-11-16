@@ -1,9 +1,7 @@
 #include "grapdec.h"
 
 png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title){
-    int8_t a;
     gfx_open(width, height, (const char *)title);
-    FILE *hey;
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < (width*4); x++){
@@ -17,10 +15,10 @@ png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, co
         }
     }
     
-    if(waitForKey(XK_Escape,&width, &height)==1){
-        //JanelaEescreve()    
+    if(waitForKey((uint8_t)XK_Escape,&width, &height)==1){
+        
     } 
     gfx_close();
-    //fclose(hey);
+
     return matrix;
 }
