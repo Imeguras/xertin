@@ -6,6 +6,11 @@
 			"Coredumps": "/coredump"
 		}
 	],
+	"settings":[
+		{
+			"Resolution": [1920,1080]
+		}
+	],
 	"images":[
 		{
 			"TransparencyBackground":[

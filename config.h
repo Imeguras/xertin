@@ -5,6 +5,7 @@
 #include <stdint.h> 
 #include <json-c/json.h> 
 #include "funcaux.h"
+#include <X11/Xlib.h>
 #ifdef WINDOWS
     #include <direct.h>
     #define GetCurrentDir _getcwd

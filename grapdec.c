@@ -29,10 +29,10 @@ uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, co
             x=x+3;
         }
     }
-    
+    //gfx_wait();
     if(waitForKey((uint8_t)XK_Escape,&width, &height)==1){
         
-    } 
+    }
     gfx_close();
 
     return matrix;

@@ -75,9 +75,6 @@ int32_t main(int argc, char *argv[]){
             }else{
                 dprintf(standarterr,"[Error]: the file you are trying to open is not supported");
             }
-            
-            
-            
         }
         
     }

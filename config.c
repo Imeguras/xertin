@@ -1,6 +1,9 @@
 #include "config.h"
 struct json_object *parsed_json;
 void createjson(){
+    //TODO MULTIPLE DISPLAY https://stackoverflow.com/questions/25849045/screen-resolution-in-c-for-linux
+    Display* d = XOpenDisplay(NULL);
+    Screen*  s = DefaultScreenOfDisplay(d);
     FILE *json; 
     int8_t *dir=NULL; 
     dir=(int8_t *)GetCurrentDir((char *)dir, GENERAL_MAXSIZE_OF_DIRECTORYS);
@@ -15,8 +18,9 @@ void createjson(){
     if (json==NULL){
         abort_(GENERAL_OPENING_READ_FILE_ERROR, "TODO FIX THIS ERROR MESSAGE");
     }
-
-    fprintf(json, SPECIFIC_JSON_DEFAULTCONFIG, dir);
+    fprintf(json, SPECIFIC_JSON_DEFAULTCONFIG, dir, s->width, s->height);
+    //TODO CHECK IF THIS GOES ALRIGHT
+    XCloseDisplay(d);
     fclose(json);
 }
 
