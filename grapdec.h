@@ -9,5 +9,6 @@
 #include "gfx.h"
 #include <png.h>
 #include "config.h"
-png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title);
+uint8_t ** JanelaEescreve(uint8_t** matrix, uint32_t width, uint32_t height, const int8_t *title);
+uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei);
 #endif

@@ -1,6 +1,21 @@
 #include "grapdec.h"
+uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
+    uint8_t **matriz;
+    matriz=calloc(hei,sizeof(uint8_t *));
+    for (size_t y = 0; y < sizeof(vetor); y++){
+        for (size_t x= 0; x < rwb; x++){
+            matriz[y]=malloc(rwb);
+            matriz[y][x]=vetor[x*y];
+        }
+    }
+    return matriz;
+}
 
-png_bytepp JanelaEescreve(png_bytepp matrix, uint32_t width, uint32_t height, const int8_t *title){
+
+
+
+
+uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, const int8_t *title){
     gfx_open(width, height, (const char *)title);
     for (size_t y = 0; y < height; y++)
     {

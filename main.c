@@ -10,13 +10,15 @@
 #include <png.h>
 #include "args.h"
 #include "pngdec.h"
+#include "jpegdec.h"
+#include "gifdec.h"
 #include "grapdec.h"
 #include "config.h"
 
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 uint8_t standartout=STDOUT_FILENO;
 uint8_t standarterr=STDERR_FILENO;
-
+//uint8_t ** (*JanelaEescrevePTR)(uint8_t **, uint32_t, uint32_t, const int8_t *);
 int32_t main(int argc, char *argv[]){
     struct gengetopt_args_info args; 
     //TODO VERIFY THAT THIS DOESNT BREAK MAGICALLY!
@@ -27,7 +29,7 @@ int32_t main(int argc, char *argv[]){
     }
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
-        
+        //TODO seriously this fuction god im so lazy anyway a better way of rapidly checking if its a png will be needed
         ext = (int8_t *)strchr(args.decode_arg, '.');
         if(!ext){
             dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
@@ -44,14 +46,30 @@ int32_t main(int argc, char *argv[]){
                 pngimp image={NULL, NULL, NULL};
                 //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
                 image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
-                png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
-                JanelaEescrevePTR=&JanelaEescreve;
-                JanelaEescrevePTR(image.matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
+                //png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
+                //JanelaEescrevePTR=&JanelaEescreve;
+                image.matrix=(png_bytepp)JanelaEescreve((uint8_t **)image.matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
                 pngread_destroy(image);
                 //free_image_data(matrix, pheight);
 
             }else if (!strcmp((char *)ext+1, "jpg")){
-                
+                if(startjpeg_init(args)){
+                    fprintf(stderr, "[TODO] something went to shit");
+                }
+                /*size_t rowbytes=0;
+                uint32_t pwidth=0, pheight=0;
+               
+                uint8_t *vetor; 
+                uint8_t **matriz;
+                vetor=readjpeg_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
+                //uint8_t *(*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
+                //JanelaEescrevePTR=&JanelaEescreve;
+                matriz=VetorParaMatriz(vetor,rowbytes, pheight);
+                matriz=JanelaEescreve(matriz, pwidth, pheight, (const int8_t *)args.decode_arg);
+                //pngread_destroy(image);
+                free(matriz);
+                //free_image_data(matrix, pheight);
+                */
             }else if (!strcmp((char *)ext+1, "gif")){
                 
             }else{
