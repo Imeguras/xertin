@@ -80,8 +80,8 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		png_set_read_user_chunk_fn(png_ptr, per_chunck_ptr,(png_user_chunk_ptr)readpng_chunk_callback);
 		png_set_read_status_fn(png_ptr, pngread_whilerow);
 		//TODO HANDLING DE CHUNKS COMPLETAMlENTE DESCONHECIDOS
-		png_set_keep_unknown_chunks(png_ptr, PNG_HANDLE_CHUNK_NEVER, unused_chunks, sizeof(unused_chunks)/5);
-		//png_set_keep_unknown_chunks(png_ptr,PNG_HANDLE_CHUNK_IF_SAFE, NULL, 0);
+		//png_set_keep_unknown_chunks(png_ptr, PNG_HANDLE_CHUNK_NEVER, unused_chunks, sizeof(unused_chunks)/5);
+		png_set_keep_unknown_chunks(png_ptr,PNG_HANDLE_CHUNK_IF_SAFE, NULL, 0);
 		png_set_user_limits(png_ptr, SPECIFIC_LIBPNG_READ_WIDTH_MAX, SPECIFIC_LIBPNG_READ_HEIGHT_MAX);
 		//TODO png_set_chunk_cache_max(png_ptr, user_chunk_cache_max);  0x7fffffffL unlimited 
 		//png_set_chunk_malloc_max(png_ptr, user_chunk_malloc_max);
