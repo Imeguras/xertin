@@ -1,4 +1,5 @@
 #include "grapdec.h"
+//KINDA OBSOLETE
 uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
     uint8_t **matriz;
     matriz=calloc(hei,sizeof(uint8_t *));
@@ -10,13 +11,29 @@ uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
     }
     return matriz;
 }
-
-
-
-
-
+uint8_t * MatrizParaVetor(uint8_t** matriz, uint32_t hei, size_t rwb){
+    uint8_t *vetor=NULL;
+    vetor =calloc(hei*rwb,sizeof(uint8_t));
+    FILE * ok; 
+    ok = fopen("teste.txt", "w");
+    for (uint32_t y = 0; y < hei; y++){
+        //memcpy(vetor[y], matriz[y], 30);
+        //vetor=memmove(&(vetor[y*rwb]), matriz[y], 10);
+        for (size_t x = 0; x < rwb; x+=4){
+            vetor[y*x]=matriz[y][x];
+            vetor[y*x+1]=matriz[y][x+1];
+            vetor[y*x+2]=matriz[y][x+2];
+            vetor[y*x+3]=0;
+            //fprintf(ok, "%d\t%d\t%d\n",vetor[y*x],vetor[y*x+1],vetor[y*x+2]);
+        }
+        
+    }
+    fclose(ok);
+    return vetor;
+}
+//OBSOLETE
 uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, const int8_t *title){
-    gfx_open(width, height, (const char *)title);
+    gfx_open(&width, &height, (const char *)title);
     for (size_t y = 0; y < height; y++)
     {
         for (size_t x = 0; x < (width*4); x++){
@@ -29,11 +46,24 @@ uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, co
             x=x+3;
         }
     }
+    gfx_flush();
     //gfx_wait();
     if(waitForKey((uint8_t)XK_Escape,&width, &height)==1){
         
     }
     gfx_close();
-
     return matrix;
+}
+
+uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, uint8_t bitdepth,size_t rwb, const char *title){
+    XImage *img;
+    gfx_open(&wid, &hei, (const char *)title); 
+    img=gfxvetor_image(vetor, bitdepth, wid, hei, rwb);
+    gfx_image(img, wid, hei);
+    //gfx_flush();
+    if(waitForKey((uint8_t)XK_Escape,&wid, &hei)==1){
+        
+    }
+    gfx_close();
+    return vetor;
 }

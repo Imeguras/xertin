@@ -4,7 +4,7 @@
 #
 
 # Bibliotecas a incluir
-LIBS=-lX11 -lpng -lz -lpthread
+LIBS=-lX11 -lpng -lz -lpthread -ljson-c
 
 # Flags para o compilador
 CFLAGS=-Wall -W -g -Wmissing-prototypes 
@@ -12,7 +12,7 @@ CFLAGS=-Wall -W -g -Wmissing-prototypes
 # Flags para a indentacao de codigo 
 IFLAGS=-br -brs -npsl -ce -cli4
 
-DIR=/home/micron/TrabalhosMov/TrabalhosC/xertim/xertin
+DIR=/home/micron/sav/Trabalhos/xertin
 # nome do executavel 
 PROGRAM=xertin
 

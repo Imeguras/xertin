@@ -17,7 +17,7 @@ typedef struct
     FILE *filep;
 }fich;
 typedef struct{
-    png_bytepp matrix;
+    png_bytepp vetor;
     png_structp png_ptr;
     png_infop info_ptr;
 }pngimp;

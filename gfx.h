@@ -18,8 +18,10 @@ Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
 #include <X11/Xutil.h>
 #include <unistd.h>
 #include <stdint.h>
+#include "config.h"
 /* Open a new graphics window. */
-void gfx_open( int width, int height, const char *title );
+void gfx_start(json_object *obj);
+void gfx_open(uint32_t *width, uint32_t *height, const char *title );
 void gfx_resize(uint32_t width, uint32_t height);
 int32_t gfx_close(void);
 /* Draw a point at (x,y) */
@@ -54,5 +56,6 @@ int gfx_event_waiting(void);
 
 /* Flush all previous output to the window. */
 void gfx_flush(void);
-
+void gfx_image(XImage *image, uint32_t wid, uint32_t hei);
+XImage *gfxvetor_image(uint8_t *data, uint8_t bitdepth, uint32_t wid, uint32_t hei, size_t rwb);
 #endif

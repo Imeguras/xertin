@@ -14,7 +14,7 @@
 #include "gifdec.h"
 #include "grapdec.h"
 #include "config.h"
-
+json_object * config;
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 uint8_t standartout=STDOUT_FILENO;
 uint8_t standarterr=STDERR_FILENO;
@@ -27,6 +27,8 @@ int32_t main(int argc, char *argv[]){
     if(!vreadable(SPECIFIC_JSON_DIRECTORY,&favblock)){
         createjson();
     }
+    config=readjson_init((const int8_t*)SPECIFIC_JSON_DIRECTORY);
+    gfx_start(config);
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
         //TODO seriously this fuction god im so lazy anyway a better way of rapidly checking if its a png will be needed
@@ -46,12 +48,12 @@ int32_t main(int argc, char *argv[]){
                 pngimp image={NULL, NULL, NULL};
                 //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
                 image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
-                //png_bytepp (*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
-                //JanelaEescrevePTR=&JanelaEescreve;
-                image.matrix=(png_bytepp)JanelaEescreve((uint8_t **)image.matrix, pwidth, pheight, (const int8_t *)args.decode_arg);
+                uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
+                pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);
                 pngread_destroy(image);
+                free(pont);
                 //free_image_data(matrix, pheight);
-
+                
             }else if (!strcmp((char *)ext+1, "jpg")){
                 if(startjpeg_init(args)){
                     fprintf(stderr, "[TODO] something went to shit");

@@ -1,36 +1,29 @@
 /*
-A simple graphics library for CSE 20211 by Douglas Thain
-
-This work is licensed under a Creative Commons Attribution 4.0 International License.  https://creativecommons.org/licenses/by/4.0/
-
-For complete documentation, see:
-http://www.nd.edu/~dthain/courses/cse20211/fall2013/gfx
-Version 3, 11/07/2012 - Now much faster at changing colors rapidly.
-Version 2, 9/23/2011 - Fixes a bug that could result in jerky animation.
+yeah if youre reading this i already modified it, so yeah... 
+and it will end up being ultra modified if not entirely scrapped in a few commits so... 
+ALSO TODO verbose thingie 
 */
-
 #include "gfx.h"
 
-/*
-gfx_open creates several X11 objects, and stores them in globals
-for use by the other functions in the library.
-*/
-
+static json_object *obs; 
 static Display *gfx_display=0;
 static Window  gfx_window;
 static GC      gfx_gc;
 static Colormap gfx_colormap;
 static int      gfx_fast_color_mode = 0;
-
-/* These values are saved by gfx_wait then retrieved later by gfx_xpos and gfx_ypos. */
+static uint32_t maxwidth=0, maxheight=0; 
 
 static int saved_xpos = 0;
 static int saved_ypos = 0;
+void gfx_start(json_object *obj){
+	obs=obj;
 
-/* Open a new graphics window. */
-
-void gfx_open( int width, int height, const char *title )
-{
+	//printf("IEBhsaghei");
+	returnjson_resolution(obs, &maxwidth, &maxheight);
+}
+void gfx_open(uint32_t *width, uint32_t *height, const char *title){
+	
+	
 	gfx_display = XOpenDisplay(0);
 	if(!gfx_display) {
 		fprintf(stderr,"gfx_open: unable to open the graphics window.\n");
@@ -46,21 +39,25 @@ void gfx_open( int width, int height, const char *title )
 
 	int blackColor = BlackPixel(gfx_display, DefaultScreen(gfx_display));
 	int whiteColor = WhitePixel(gfx_display, DefaultScreen(gfx_display));
-
-	gfx_window = XCreateSimpleWindow(gfx_display, DefaultRootWindow(gfx_display), 0, 0, width, height, 0, blackColor, blackColor);
+	if ((uint32_t)*width>maxwidth){
+		*width=maxwidth;
+	}
+	if((uint32_t)*height>maxheight){
+		*height=maxheight;
+	}
+	gfx_window = XCreateSimpleWindow(gfx_display, DefaultRootWindow(gfx_display), 0, 0, (int)*width, (int)*height, 0, blackColor, blackColor);
 
 	XSetWindowAttributes attr;
 	attr.backing_store = Always;
-
+	//attr.background_pixel = 0x80800000;
 	XChangeWindowAttributes(gfx_display,gfx_window,CWBackingStore,&attr);
-
+	
 	XStoreName(gfx_display,gfx_window,title);
 
 	XSelectInput(gfx_display, gfx_window, StructureNotifyMask|KeyPressMask|ButtonPressMask);
 
 	XMapWindow(gfx_display,gfx_window);
-
-	gfx_gc = XCreateGC(gfx_display, gfx_window, 0, 0);
+	gfx_gc = XCreateGC(gfx_display, gfx_window, 0,0);
 
 	gfx_colormap = DefaultColormap(gfx_display,0);
 
@@ -81,21 +78,54 @@ void gfx_resize(uint32_t width, uint32_t height){
 int32_t gfx_close(void){
 	return (int32_t)XDestroyWindow(gfx_display, gfx_window);
 }
-/* Draw a single point at (x,y) */
+
 
 void gfx_point( int x, int y )
 {
 	XDrawPoint(gfx_display,gfx_window,gfx_gc,x,y);
 }
+void gfx_image(XImage *image, uint32_t wid, uint32_t hei){
 
-/* Draw a line from (x1,y1) to (x2,y2) */
+//	GC gc;
+	//XGCValues values;
+	//gc = XCreateGC(gfx_display, gfx_window, 0, &values);
+	Pixmap bitmap;
+	
+	bitmap = XCreatePixmap(gfx_display,gfx_window, wid, hei, image->depth);
+	//TODO FIX OFFSET FIX DEST MAYBE DO MULTITHREADED ACTIOn
+	
+	XInitImage(image);
+	//int a= XDrawRectangle(gfx_display, gfx_window,gfx_gc,10,10,wid+10,hei+10);
+	//image->byte_order = MSBFirst;
+	//image->bitmap_bit_order = MSBFirst;
+	XPutImage(gfx_display,bitmap,gfx_gc,image, 0,0,0,0,wid,hei);
+	//XCopyArea(gfx_display, image, bitmap, gfx_gc, 0,0,wid, hei, 0, 0);
+	XSetWindowBackgroundPixmap(gfx_display, gfx_window,bitmap);
+	//int			/* bitmap_pad */,
+	//XImage
+}
+XImage *gfxvetor_image(uint8_t *data, uint8_t bitdepth, uint32_t wid, uint32_t hei, size_t rwb){
+	XImage *image;
+	Visual *visual = DefaultVisual(gfx_display,0);
+	int screen = DefaultScreen(gfx_display);
+	int dplanes = DisplayPlanes(gfx_display, screen);
+	//image=(XImage *)malloc(sizeof(XImage));
+	//image = XGetImage(gfx_display,gfx_display,0,0,wid,hei,dplanes, ZPixmap);
+	//printf("\n%d\n",dplanes);
+	//image->f.create_image(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
+	image = XCreateImage(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
+	//image->byte_order=MSBFirst;
 
+	//image->bytes_per_line=rwb;
+	//image->bits_per_pixel=32;
+	//XInitImage(image);
+
+	return image;
+}
 void gfx_line( int x1, int y1, int x2, int y2 )
 {
 	XDrawLine(gfx_display,gfx_window,gfx_gc,x1,y1,x2,y2);
 }
-
-/* Change the current drawing color. */
 
 void gfx_color( int r, int g, int b )
 {
@@ -116,14 +146,12 @@ void gfx_color( int r, int g, int b )
 	XSetForeground(gfx_display, gfx_gc, color.pixel);
 }
 
-/* Clear the graphics window to the background color. */
+
 
 void gfx_clear()
 {
 	XClearWindow(gfx_display,gfx_window);
 }
-
-/* Change the current background color. */
 
 void gfx_clear_color( int r, int g, int b )
 {
@@ -195,13 +223,13 @@ uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
 		default:
 		 	for(int i=0; i<2; i++){
 				 fprintf(stdout, "[INFO]DEBUG EVENTO TIPO %d\n", event.type);
-			 }
+			}
 			break;
 		}
 	}
 	return 0; 
 }
-/* Wait for the user to press a key or mouse button. */
+
 uint8_t gfx_wait(){
 	XEvent event;
 	gfx_flush();
@@ -219,7 +247,6 @@ uint8_t gfx_wait(){
 	}
 }
 
-/* Return the X and Y coordinates of the last event. */
 
 int gfx_xpos()
 {
@@ -230,8 +257,6 @@ int gfx_ypos()
 {
 	return saved_ypos;
 }
-
-/* Flush all previous output to the window. */
 
 void gfx_flush()
 {
