@@ -29,10 +29,8 @@ json_object* readjson_init(const int8_t *filename){
 	size_t bytespan;
     uint32_t pos; 
     uint8_t pos2;
-    //char buffer[1024];
     //TODO PROPER CHECKING 
     int8_t *needle; 
-    json_object *hey;
     fp = fopen((const char *)filename,"r");
     if(fp==NULL){
         abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
@@ -56,7 +54,6 @@ json_object* readjson_init(const int8_t *filename){
     needle=realloc(needle,bytespan);
     fseek(fp, 0, SEEK_SET);
     fread(needle, sizeof(uint8_t), bytespan, fp);
-    //printf("\n%s\n", needle);
     parsed_json = json_tokener_parse((const char *)needle);
     //TODO PROPER CLOSING 
     fclose(fp);
@@ -66,7 +63,6 @@ void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
     json_object *resolution;
     json_object *settings;
     json_object *setting;
-    json_object_iter het;
     if(json_object_object_get_ex(obs, "settings",&settings)){
         setting=json_object_array_get_idx(settings, 0);
         if(json_object_object_get_ex(setting, "Resolution",&resolution)){
@@ -76,6 +72,7 @@ void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
         }
     }
 }
+
 /*void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix){
     *size=json_object_get_int(obs);
     matrix=malloc((*size)*sizeof(uint8_t));

@@ -12,23 +12,14 @@ uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
     return matriz;
 }
 uint8_t * MatrizParaVetor(uint8_t** matriz, uint32_t hei, size_t rwb){
-    uint8_t *vetor=NULL;
-    vetor =calloc(hei*rwb,sizeof(uint8_t));
-    FILE * ok; 
-    ok = fopen("teste.txt", "w");
-    for (uint32_t y = 0; y < hei; y++){
-        //memcpy(vetor[y], matriz[y], 30);
-        //vetor=memmove(&(vetor[y*rwb]), matriz[y], 10);
-        for (size_t x = 0; x < rwb; x+=4){
-            vetor[y*x]=matriz[y][x];
-            vetor[y*x+1]=matriz[y][x+1];
-            vetor[y*x+2]=matriz[y][x+2];
-            vetor[y*x+3]=0;
-            //fprintf(ok, "%d\t%d\t%d\n",vetor[y*x],vetor[y*x+1],vetor[y*x+2]);
-        }
-        
+    uint8_t *vetor = calloc(hei*rwb,sizeof(uint8_t));
+    uint8_t *pCurrent = vetor;
+    for (uint32_t row = 0; row < hei; row++)
+    {
+        uint8_t *pRow = matriz[row];
+        memcpy(pCurrent, pRow, rwb);
+        pCurrent += rwb;
     }
-    fclose(ok);
     return vetor;
 }
 //OBSOLETE

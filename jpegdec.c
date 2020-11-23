@@ -12,6 +12,34 @@ uint8_t startjpeg_init(struct gengetopt_args_info args){
 	return 0;
 }
 
+
+uint8_t * readjpeg_verificar(const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei){
+	struct jpeg_decompress_struct info;
+	FILE *fp=fopen(file, "rb"); 
+	if (fp== NULL){
+		abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
+	}
+	jpeg_create_decompress(&info);
+	jpeg_stdio_src(&info, fp);
+	jpeg_read_header(&info, TRUE);
+
+	jpeg_start_decompress(&info);
+	//info.err
+	*rwb = info.output_width * info.output_components;
+	*wid = info.output_width; 
+	*hei = info.output_height;
+/* Make a one-row-high sample array that will go away when done with image */
+	uint8_t * buffer = (*info.mem->alloc_sarray)
+ 	((j_common_ptr) &info, JPOOL_IMAGE, *rwb, 1);
+	while (info.output_scanline < info.output_height) {
+		(void) jpeg_read_scanlines(&info, buffer, 1);
+		//put_scanline_someplace(buffer[0], *rsw);
+	}
+    (void) jpeg_finish_decompress(&info);
+	jpeg_destroy_decompress(&info);
+	fclose(fp);
+	return buffer;
+}
 // METHODDEF(void) my_error_exit (j_common_ptr cinfo){
 //   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
 //   my_error_ptr myerr = (my_error_ptr) cinfo->err;

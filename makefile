@@ -4,7 +4,7 @@
 #
 
 # Bibliotecas a incluir
-LIBS=-lX11 -lpng -lz -lpthread -ljson-c
+LIBS=-lX11 -lpng -lz -lpthread -ljson-c -ljpeg
 
 # Flags para o compilador
 CFLAGS=-Wall -W -g -Wmissing-prototypes 

@@ -100,7 +100,7 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		#else
 		png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, 1.0/PNG_DEFAULT_sRGB);
 		#endif
-	
+	png_set_bgr(png_ptr);
 	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL); 
 	
 	*rwb=png_get_rowbytes(png_ptr, info_ptr);

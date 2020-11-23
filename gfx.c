@@ -85,42 +85,15 @@ void gfx_point( int x, int y )
 	XDrawPoint(gfx_display,gfx_window,gfx_gc,x,y);
 }
 void gfx_image(XImage *image, uint32_t wid, uint32_t hei){
-
-//	GC gc;
-	//XGCValues values;
-	//gc = XCreateGC(gfx_display, gfx_window, 0, &values);
-	Pixmap bitmap;
-	
-	bitmap = XCreatePixmap(gfx_display,gfx_window, wid, hei, image->depth);
-	//TODO FIX OFFSET FIX DEST MAYBE DO MULTITHREADED ACTIOn
-	
-	XInitImage(image);
-	//int a= XDrawRectangle(gfx_display, gfx_window,gfx_gc,10,10,wid+10,hei+10);
-	//image->byte_order = MSBFirst;
-	//image->bitmap_bit_order = MSBFirst;
-	XPutImage(gfx_display,bitmap,gfx_gc,image, 0,0,0,0,wid,hei);
-	//XCopyArea(gfx_display, image, bitmap, gfx_gc, 0,0,wid, hei, 0, 0);
-	XSetWindowBackgroundPixmap(gfx_display, gfx_window,bitmap);
-	//int			/* bitmap_pad */,
-	//XImage
+	XPutImage(gfx_display,gfx_window,gfx_gc,image, 0,0,0,0,wid,hei);
 }
 XImage *gfxvetor_image(uint8_t *data, uint8_t bitdepth, uint32_t wid, uint32_t hei, size_t rwb){
 	XImage *image;
-	Visual *visual = DefaultVisual(gfx_display,0);
-	int screen = DefaultScreen(gfx_display);
-	int dplanes = DisplayPlanes(gfx_display, screen);
-	//image=(XImage *)malloc(sizeof(XImage));
-	//image = XGetImage(gfx_display,gfx_display,0,0,wid,hei,dplanes, ZPixmap);
-	//printf("\n%d\n",dplanes);
-	//image->f.create_image(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
-	image = XCreateImage(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
-	//image->byte_order=MSBFirst;
-
-	//image->bytes_per_line=rwb;
-	//image->bits_per_pixel=32;
-	//XInitImage(image);
-
-	return image;
+    Visual *visual = DefaultVisual(gfx_display,0);
+    int screen = DefaultScreen(gfx_display);
+    int dplanes = DisplayPlanes(gfx_display, screen);
+    image = XCreateImage(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
+    return image;
 }
 void gfx_line( int x1, int y1, int x2, int y2 )
 {
@@ -132,10 +105,8 @@ void gfx_color( int r, int g, int b )
 	XColor color;
 
 	if(gfx_fast_color_mode) {
-		/* If this is a truecolor display, we can just pick the color directly. */
 		color.pixel = ((b&0xff) | ((g&0xff)<<8) | ((r&0xff)<<16) );
 	} else {
-		/* Otherwise, we have to allocate it from the colormap of the display. */
 		color.pixel = 0;
 		color.red = r<<8;
 		color.green = g<<8;
