@@ -14,11 +14,28 @@ uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
 uint8_t * MatrizParaVetor(uint8_t** matriz, uint32_t hei, size_t rwb){
     uint8_t *vetor = calloc(hei*rwb,sizeof(uint8_t));
     uint8_t *pCurrent = vetor;
-    for (uint32_t row = 0; row < hei; row++)
-    {
+    for (uint32_t row = 0; row < hei; row++){
         uint8_t *pRow = matriz[row];
         memcpy(pCurrent, pRow, rwb);
         pCurrent += rwb;
+    }
+    return vetor;
+}
+
+
+
+uint8_t * MatrizParaVetorJPEG(uint8_t** matriz, uint32_t hei, size_t rwb){
+    //printf("\n\tALTURA|%d",hei);
+    //printf("\n\tSIZEBYTEROW|%lu\n",rwb);
+    uint8_t *vetor = calloc(hei*rwb,sizeof(uint8_t));
+    uint8_t *pCurrent = vetor;
+    for (uint32_t row = 0; row < hei; row++)
+    {
+        for (size_t i = 0; i < rwb; i++)
+        {
+            vetor[row*i]=matriz[row][i];
+        }
+            
     }
     return vetor;
 }

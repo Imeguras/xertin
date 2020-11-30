@@ -54,24 +54,28 @@ int32_t main(int argc, char *argv[]){
                 free(pont);
                 //free_image_data(matrix, pheight);
                 
-            }else if (!strcmp((char *)ext+1, "jpg")){
+            }else if (!strcmp((char *)ext+1, "jpg") || !strcmp((char *)ext+1, "jpeg")){
                 if(startjpeg_init(args)){
                     fprintf(stderr, "[TODO] something went to shit");
                 }
-                /*size_t rowbytes=0;
+                size_t rowbytes=0;
                 uint32_t pwidth=0, pheight=0;
                
-                uint8_t *vetor; 
-                uint8_t **matriz;
-                vetor=readjpeg_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
+                uint8_t *vetor=NULL; 
+                uint8_t **matriz=NULL;
+                vetor=readjpeg_verificar(matriz, args.decode_arg, &rowbytes, &pwidth, &pheight);
+                //vetor=MatrizParaVetor(matriz, pheight, rowbytes);
+                vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes,args.decode_arg);
+                //matriz=JanelaEescreve(matriz, pwidth, pheight, args.decode_arg);
                 //uint8_t *(*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
                 //JanelaEescrevePTR=&JanelaEescreve;
-                matriz=VetorParaMatriz(vetor,rowbytes, pheight);
-                matriz=JanelaEescreve(matriz, pwidth, pheight, (const int8_t *)args.decode_arg);
+                //vetor=JanelaEescreve(vetor, pwidth, pheight, (const int8_t *)args.decode_arg);
+                //
+                //free(vetor);
                 //pngread_destroy(image);
-                free(matriz);
+                //free(matriz);
                 //free_image_data(matrix, pheight);
-                */
+                
             }else if (!strcmp((char *)ext+1, "gif")){
                 
             }else{
@@ -87,7 +91,6 @@ int32_t main(int argc, char *argv[]){
 uint8_t vreadable(char *string,uint32_t *favouredsize){
     struct stat fs;
     if (stat(string, &fs) == -1) {
-        
         perror("There was a failure in reading the file status");
         return 0;
         exit(2);

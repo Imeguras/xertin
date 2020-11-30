@@ -10,14 +10,13 @@
 #include "config.h"
 uint8_t startjpeg_init(struct gengetopt_args_info args);
 
-/*struct my_error_mgr {
+struct readjpeg_errorstruct {
   struct jpeg_error_mgr pub;
   jmp_buf setjmp_buffer;	
 };
 
-typedef struct my_error_mgr * my_error_ptr;
 
-
+typedef struct readjpeg_errorstruct * my_error_ptr;
 METHODDEF(void) my_error_exit (j_common_ptr cinfo);
-JSAMPLE* readjpeg_verificar (char *file,size_t *rsw, uint32_t *wid, uint32_t *hei);**/
+uint8_t* readjpeg_verificar(uint8_t **matriz, const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei); 
 #endif

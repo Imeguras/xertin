@@ -35,7 +35,7 @@ json_object* readjson_init(const int8_t *filename){
     if(fp==NULL){
         abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
     }
-    //TOOPTIMISE is this feasable? or might as well just have a giant buffer?  
+    //TOOPTIMISE is this feasable? or might as well just have a giant buffer? I WAS ULTRA STUPID, a very simple option will be introduced latter 
     needle=malloc(1);
     do
     {

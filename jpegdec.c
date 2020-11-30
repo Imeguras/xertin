@@ -12,45 +12,72 @@ uint8_t startjpeg_init(struct gengetopt_args_info args){
 	return 0;
 }
 
+METHODDEF(void) my_error_exit (j_common_ptr cinfo){
+  /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
+  my_error_ptr myerr = (my_error_ptr) cinfo->err;
 
-uint8_t * readjpeg_verificar(const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei){
+  /* Always display the message. */
+  /* We could postpone this until after returning, if we chose. */
+  (*cinfo->err->output_message) (cinfo);
+
+  /* Return control to the setjmp point */
+  longjmp(myerr->setjmp_buffer, 1);
+}
+
+uint8_t* readjpeg_verificar(uint8_t** matriz, const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei){
+	//FILE *da;
+	//da=fopen("testeda.txt","w");
 	struct jpeg_decompress_struct info;
+	struct readjpeg_errorstruct jerr;
+	info.err = jpeg_std_error(&jerr.pub);
 	FILE *fp=fopen(file, "rb"); 
 	if (fp== NULL){
 		abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
 	}
+	jerr.pub.error_exit = my_error_exit;
+	//TODO
+	/*if (setjmp(jerr.setjmp_buffer)) {
+    	jpeg_destroy_decompress(&info);
+    	fclose(fp);
+    	return 0;
+  	}*/
 	jpeg_create_decompress(&info);
 	jpeg_stdio_src(&info, fp);
 	jpeg_read_header(&info, TRUE);
-
+	info.out_color_space=JCS_EXT_BGR;
+	jpeg_calc_output_dimensions(&info);
+	
 	jpeg_start_decompress(&info);
-	//info.err
-	*rwb = info.output_width * info.output_components;
+	
+	int numChannels = info.num_components;
+	*rwb = info.output_width * numChannels;
 	*wid = info.output_width; 
 	*hei = info.output_height;
-/* Make a one-row-high sample array that will go away when done with image */
-	uint8_t * buffer = (*info.mem->alloc_sarray)
- 	((j_common_ptr) &info, JPOOL_IMAGE, *rwb, 1);
-	while (info.output_scanline < info.output_height) {
-		(void) jpeg_read_scanlines(&info, buffer, 1);
-		//put_scanline_someplace(buffer[0], *rsw);
+	/* Make a one-row-high sample array that will go away when done with image */
+	uint8_t *vetor=calloc((*rwb)*(*hei), sizeof(uint8_t));
+	matriz = (uint8_t **)(*info.mem->alloc_sarray)((j_common_ptr) &info, JPOOL_IMAGE, *rwb, 1);
+	size_t needle; 
+	while (info.output_scanline < *hei) {
+		jpeg_read_scanlines(&info, matriz, 1);
+		memcpy(vetor+(needle),matriz[0], (*rwb));
+		needle+=*rwb;
 	}
+	//printf("%s",vetor);
+	//fprintf(da, "%s", matriz[1]);
+	
+	//unsigned long dataSize = (*rwb) * (*hei);
+	//unsigned char *data = (unsigned char *)malloc(dataSize);
+    //unsigned char* rowptr;
+	//jpeg_start_output(&info)
+	//unsigned char **data=malloc(*hei);
+
     (void) jpeg_finish_decompress(&info);
 	jpeg_destroy_decompress(&info);
 	fclose(fp);
-	return buffer;
+	return vetor;
 }
-// METHODDEF(void) my_error_exit (j_common_ptr cinfo){
-//   /* cinfo->err really points to a my_error_mgr struct, so coerce pointer */
-//   my_error_ptr myerr = (my_error_ptr) cinfo->err;
 
-//   /* Always display the message. */
-//   /* We could postpone this until after returning, if we chose. */
-//   (*cinfo->err->output_message) (cinfo);
 
-//   /* Return control to the setjmp point */
-//   longjmp(myerr->setjmp_buffer, 1);
-// }
 // uint8_t ** readjpeg_verificar(char *file,size_t *rsw, uint32_t *wid, uint32_t *hei){
 //   /* This struct contains the JPEG decompression parameters and pointers to
 //    * working space (which is allocated as needed by the JPEG library).
