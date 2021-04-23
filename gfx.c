@@ -180,12 +180,15 @@ uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
 			saved_ypos = event.xkey.y;
 			*x=saved_xpos;
 			*y=saved_ypos;
-			//printf("AHHHHHH%u", keycode);
+			
 			keycodereceived=event.xkey.keycode;
 			break;
 		case ResizeRequest:
 			*x=event.xresizerequest.width;
 			*y=event.xresizerequest.height;
+			#ifdef SHOW_DEBUG
+				fprintf(stdout, "[Debug] Resize request on the window to %dx%d pixels\n", *x, *y);
+			#endif
 			return 1; 
 			break;
 		case DestroyNotify:

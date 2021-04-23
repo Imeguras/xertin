@@ -8,9 +8,9 @@
 #include <stdarg.h>
 #include <png.h>
 #include <zlib.h>
-#include "funcaux.h"
-#include "args.h"
-#include "config.h"
+#include "../funcaux.h"
+#include "../args.h"
+#include "../config.h"
 typedef struct 
 {
     char *filen;

@@ -9,20 +9,20 @@
 #include <unistd.h>
 #include <png.h>
 #include "args.h"
-#include "pngdec.h"
-#include "jpegdec.h"
-#include "gifdec.h"
 #include "grapdec.h"
 #include "config.h"
+#include "decoders/pngdec.h"
+#include "decoders/jpegdec.h"
+#include "decoders/gifdec.h"
 json_object * config;
 uint8_t vreadable(char *string,uint32_t *favouredsize);
-uint8_t standartout=STDOUT_FILENO;
-uint8_t standarterr=STDERR_FILENO;
 //uint8_t ** (*JanelaEescrevePTR)(uint8_t **, uint32_t, uint32_t, const int8_t *);
 int32_t main(int argc, char *argv[]){
     struct gengetopt_args_info args; 
-    //TODO VERIFY THAT THIS DOESNT BREAK MAGICALLY!
-    cmdline_parser(argc,argv, &args);
+    
+    if (cmdline_parser(argc, argv, &args)!= 0 ){
+        return 1;
+    }
     uint32_t favblock;
     if(!vreadable(SPECIFIC_JSON_DIRECTORY,&favblock)){
         createjson();
@@ -31,22 +31,21 @@ int32_t main(int argc, char *argv[]){
     gfx_start(config);
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;
-        //TODO seriously this fuction god im so lazy anyway a better way of rapidly checking if its a png will be needed
-        ext = (int8_t *)strchr(args.decode_arg, '.');
+        //TODO well i tried finding a fuction and it seems that this one is pretty good it just a extra r in code too
+        ext = (int8_t *)strrchr(args.decode_arg, '.');
         if(!ext){
-            dprintf(standarterr,"[Error]: no file extension found, are you opening a text file?");
+            fprintf(stderr,"[Error]: no file extension found, are you opening a text file?");
         }else{
-            dprintf(standartout,"\nExtension is %s\n",ext+1);
+            fprintf(stdout,"\nExtension is %s\n",ext+1);
+            //todo this is a dozie maybe i can just do some basic "hash" or something to be faster in a case instead of doing the calculations over and over again
             if (!strcmp((char *)ext+1, "png")){
-                //uint8_t *done;
+                
                 if(startpng_init(args)){
                     fprintf(stderr, "[TODO] something went to shit");
                 }
                 size_t rowbytes=0;
                 png_uint_32 pwidth=0, pheight=0;
-                
                 pngimp image={NULL, NULL, NULL};
-                //matrix=readpng_verificar(&nome,&rowbytes, &pwidth, &pheight);
                 image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
                 uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
                 pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);
@@ -79,11 +78,12 @@ int32_t main(int argc, char *argv[]){
             }else if (!strcmp((char *)ext+1, "gif")){
                 
             }else{
-                dprintf(standarterr,"[Error]: the file you are trying to open is not supported");
+                fprintf(stderr,"[Error]: The file you are trying to open is not supported");
             }
         }
         
     }
+    
     cmdline_parser_free(&args);
     return 0;
 }

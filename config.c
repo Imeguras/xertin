@@ -48,7 +48,9 @@ json_object* readjson_init(const int8_t *filename){
     fseek(fp, pos2, SEEK_SET);
     needle=realloc(needle, pos-pos2);
     fread(needle, 1, pos-pos2, fp);
-    printf("\n%s\n",needle);
+    #ifdef SHOW_DEBUG
+        printf("\n%s\n",needle);
+    #endif 
 	json_object *parsed_json;
     bytespan=atoi((char *)needle);
     needle=realloc(needle,bytespan);
@@ -68,7 +70,9 @@ void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
         if(json_object_object_get_ex(setting, "Resolution",&resolution)){
 	        *wid = (uint32_t)json_object_get_int(json_object_array_get_idx(resolution, 0));
 	        *hei = (uint32_t)json_object_get_int(json_object_array_get_idx(resolution, 1));
-            printf("\n%u %u\n", *wid, *hei);
+            #ifdef SHOW_DEBUG 
+                printf("\nResolution in configs is:%ux%u\n", *wid, *hei);
+            #endif
         }
     }
 }

@@ -5,9 +5,9 @@
 #include <stdint.h>
 #include <jpeglib.h>
 #include <setjmp.h>
-#include "args.h"
-#include "funcaux.h" 
-#include "config.h"
+#include "../args.h"
+#include "../funcaux.h" 
+#include "../config.h"
 uint8_t startjpeg_init(struct gengetopt_args_info args);
 
 struct readjpeg_errorstruct {

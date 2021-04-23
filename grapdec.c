@@ -69,9 +69,17 @@ uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, uint8_t
     img=gfxvetor_image(vetor, bitdepth, wid, hei, rwb);
     gfx_image(img, wid, hei);
     //gfx_flush();
+    gfx_color(255,10,20);
+    gfx_line(0,0,40,60);
+    uint32_t oldwidth=wid;
+    uint32_t oldheight=hei;
+    //TODO fix this! 
     if(waitForKey((uint8_t)XK_Escape,&wid, &hei)==1){
+        oldwidth-=wid;
+        oldheight-=hei; 
         
     }
+    
     gfx_close();
     return vetor;
 }
