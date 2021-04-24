@@ -1,4 +1,8 @@
 #include "jpegdec.h"
+#include <stdint.h>
+#include <stdio.h>
+#include <string.h>
+
 //TODO DOCUMENTATE THIS SCHEIße 
 static uint16_t flags;
 
@@ -24,9 +28,8 @@ METHODDEF(void) my_error_exit (j_common_ptr cinfo){
   longjmp(myerr->setjmp_buffer, 1);
 }
 
-uint8_t* readjpeg_verificar(uint8_t** matriz, const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei){
-	//FILE *da;
-	//da=fopen("testeda.txt","w");
+uint8_t* readjpeg_verificar(uint8_t* vetor, const char *file, size_t *rwb, uint32_t *wid, uint32_t *hei){
+	size_t check=0;
 	struct jpeg_decompress_struct info;
 	struct readjpeg_errorstruct jerr;
 	info.err = jpeg_std_error(&jerr.pub);
@@ -41,6 +44,7 @@ uint8_t* readjpeg_verificar(uint8_t** matriz, const char *file, size_t *rwb, uin
     	fclose(fp);
     	return 0;
   	}*/
+	
 	jpeg_create_decompress(&info);
 	jpeg_stdio_src(&info, fp);
 	jpeg_read_header(&info, TRUE);
@@ -48,36 +52,66 @@ uint8_t* readjpeg_verificar(uint8_t** matriz, const char *file, size_t *rwb, uin
 	jpeg_calc_output_dimensions(&info);
 	
 	jpeg_start_decompress(&info);
-	
+	fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
 	int numChannels = info.num_components;
-	*rwb = info.output_width * numChannels;
+	fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
+	*rwb = info.output_width * numChannels*info.data_precision;
 	*wid = info.output_width; 
 	*hei = info.output_height;
-	/* Make a one-row-high sample array that will go away when done with image */
-	uint8_t *vetor=calloc((*rwb)*(*hei), sizeof(uint8_t));
-	matriz = (uint8_t **)(*info.mem->alloc_sarray)((j_common_ptr) &info, JPOOL_IMAGE, *rwb, 1);
-	size_t needle; 
-	while (info.output_scanline < *hei) {
-		jpeg_read_scanlines(&info, matriz, 1);
-		memcpy(vetor+(needle),matriz[0], (*rwb));
-		needle+=*rwb;
-	}
-	//printf("%s",vetor);
-	//fprintf(da, "%s", matriz[1]);
-	
-	//unsigned long dataSize = (*rwb) * (*hei);
-	//unsigned char *data = (unsigned char *)malloc(dataSize);
-    //unsigned char* rowptr;
-	//jpeg_start_output(&info)
-	//unsigned char **data=malloc(*hei);
 
-    (void) jpeg_finish_decompress(&info);
-	jpeg_destroy_decompress(&info);
+  /* We can ignore the return value since suspension is not possible
+   * with the stdio data source.
+   */
+
+  /* We may need to do some setup of our own at this point before reading
+   * the data.  After jpeg_start_decompress() we have the correct scaled
+   * output image dimensions available, as well as the output colormap
+   * if we asked for color quantization.
+   * In this example, we need to make an output work buffer of the right size.
+   */
+  /* JSAMPLEs per row in output buffer */
+  JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
+  JSAMPARRAY buffer; 
+  
+  //TODO MAKE MULTITHREADING FOR BIGGER IMAGES
+  buffer = (info.mem->alloc_sarray) ((j_common_ptr)&info, JPOOL_IMAGE, *rwb, SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA);
+
+  /* Step 6: while (scan lines remain to be read) */
+  /*           jpeg_read_scanlines(...); */
+
+  /* Here we use the library's state variable cinfo->output_scanline as the
+   * loop counter, so that we don't have to keep track ourselves.
+   */
+  	while (info.output_scanline < info.output_height) {
+		/* jpeg_read_scanlines expects an array of pointers to scanlines.
+		* Here the array is only one element long, but you could ask for
+		* more than one scanline at a time if that's more convenient.
+		*/
+		
+		//TODO SOMEONE(AS IN ME) FIX THE UGGO CODE AND ADD AN ABORTION SYSTEM OR SOMETHING? DID SETJMP WORK FOR THIS? ALSO ENDOFFILE EXISTS 
+		forceretry:
+			check=jpeg_read_scanlines(&info, buffer, SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA);
+				if(check!=SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA){
+					fprintf(stderr, "[ERROR] Failed to read %lu line(s) forcing a retry", SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA-check);
+					goto forceretry;
+				}
+		vetor=readjpeg_defragment(vetor,(uint8_t *)buffer[0],*rwb, info.output_scanline);
+		/* Assume put_scanline_someplace wants a pointer and sample count. */
+		//put_scanline_someplace(buffer[0], row_stride);
+  	}
+
+    //(void) jpeg_finish_decompress(&info);
+	//jpeg_destroy_decompress(&info);
 	fclose(fp);
 	return vetor;
 }
-
-
+//TOOPTMIZE LASTINDEX ONLY FEASIBLY GOES TO UNSIGNED INT
+uint8_t* readjpeg_defragment(uint8_t* DefragVetor, uint8_t* vetor, size_t rwb, size_t lastindex){
+	DefragVetor=realloc(DefragVetor,(rwb*lastindex+rwb*SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA)*sizeof(uint8_t));
+	uint8_t *ref=DefragVetor+(rwb*lastindex);
+	memcpy(ref, vetor, rwb*SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA);
+	return DefragVetor;
+}
 // uint8_t ** readjpeg_verificar(char *file,size_t *rsw, uint32_t *wid, uint32_t *hei){
 //   /* This struct contains the JPEG decompression parameters and pointers to
 //    * working space (which is allocated as needed by the JPEG library).

@@ -18,7 +18,7 @@ PROGRAM=xertin
 
 # Nome do ficheiro de opcoes do gengetopt (caso exista)
 PROGRAM_OPT=args
-FOLDERS= decoders 
+FOLDERS=decoders 
 EVERYFILE= $(patsubst %, %/*.c, $(FOLDERS))
 PROGRAM_OBJS=main.o funcaux.o jpegdec.o pngdec.o grapdec.o gfx.o config.o ${PROGRAM_OPT}.o
 PROGRAM_OBJSDIR=$(patsubst %, obj/%, $(PROGRAM_OBJS))
@@ -30,6 +30,8 @@ all: ${PROGRAM}
 depuracao: CFLAGS += -D SHOW_DEBUG 
 depuracao: ${PROGRAM}
 
+debug: 
+	gdb -se xertin -d decoders
 #program_objsdir:echo "${PROGRAM_OBJS}" || sed "s/m/ m/" || sed "s/ / obj\//g"
 piramideDeDependencias:  
 	${CC} -MM *.c ${EVERYFILE} 
@@ -49,9 +51,8 @@ gifdec.o: decoders/gifdec.c decoders/gifdec.h ${PROGRAM_OPT}.h funcaux.h config.
 jpegdec.o: decoders/jpegdec.c decoders/jpegdec.h ${PROGRAM_OPT}.h funcaux.h config.h funcaux.h
 pngdec.o: decoders/pngdec.c decoders/pngdec.h funcaux.h ${PROGRAM_OPT}.h config.h funcaux.h
 
-%.o : %.c
+%.o : %.c decoders/%.c    
 	${CC} ${CFLAGS} -c $< -o obj/$@
-
 ${PROGRAM_OPT}.h: ${PROGRAM_OPT}.ggo
 	gengetopt < ${PROGRAM_OPT}.ggo --file-name=${PROGRAM_OPT}
 
@@ -69,3 +70,4 @@ codedump:
 	coredumpctl -o ${nomedofich} dump ${DIR}/xertin
 	mv ${nomedofich} ${DIR}/coredump
 	gdb ${PROGRAM} coredump/${nomedofich}
+

@@ -14,4 +14,5 @@ uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei);
 uint8_t * MatrizParaVetor(uint8_t** matriz, uint32_t hei, size_t rwb);
 uint8_t *  MatrizParaVetorJPEG(uint8_t** matriz, uint32_t hei, size_t rwb);
 uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, uint8_t bitdepth,size_t rwb, const char *title);
+uint8_t  **RipHexTable(uint8_t ** matrix, uint32_t width, uint32_t height, int8_t delimeter);
 #endif

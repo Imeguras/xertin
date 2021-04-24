@@ -8,3 +8,4 @@ option "decodetools" D "Provides more tools to decode an image such as zoom, rot
 option "encode" e "Encode an image through shell" string typestr="filename" optional
 option "encodescrypt" - "Encodes an image throught a written text file" string typestr="dirname" optional
 option "verbose" v "Outputs the current tasks, doings or procedures of the machine" optional
+option "delimiter" - "Ignores the delimiter set in the config and uses the provided one" string optional

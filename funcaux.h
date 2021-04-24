@@ -11,6 +11,9 @@
 #define SPECIFIC_LIBPNG_READ_WIDTH_MAX 65535
 #define SPECIFIC_LIBPNG_READ_HEIGHT_MAX 65535
 #define SPECIFIC_LIBPNG_SRGB_GAMA_MULTIPLIER 2.2
+//JPEG RELATED MACROS
+#define SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA 1
+
 
 #define GENERAL_OPENING_READ_FILE_ERROR "[Error]||Welp while opening the file to read something got fucked, try restarting the program? %s"
 #define GENERAL_READ_FILE_ERROR "[Error]||Welp while reading the file something got fucked, try restarting the program? %s"

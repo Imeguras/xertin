@@ -1,5 +1,5 @@
 #include "bmpdec.h"
-void ReadImage(const char *fileName,int8_t **pixels, int32_t *width, int32_t *height, int32_t *bytesPerPixel){
+/*void ReadImage(const char *fileName,int8_t **pixels, int32_t *width, int32_t *height, int32_t *bytesPerPixel){
         FILE *imageFile = fopen(fileName, "rb");
         int32_t dataOffset;
         fseek(imageFile, DATA_OFFSET_OFFSET, SEEK_SET);
@@ -26,4 +26,4 @@ void ReadImage(const char *fileName,int8_t **pixels, int32_t *width, int32_t *he
         }
  
         fclose(imageFile);
-}
+}*/

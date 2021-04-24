@@ -1,5 +1,6 @@
 #include "grapdec.h"
-//KINDA OBSOLETE
+#include <stdio.h>
+
 uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
     uint8_t **matriz;
     matriz=calloc(hei,sizeof(uint8_t *));
@@ -28,7 +29,7 @@ uint8_t * MatrizParaVetorJPEG(uint8_t** matriz, uint32_t hei, size_t rwb){
     //printf("\n\tALTURA|%d",hei);
     //printf("\n\tSIZEBYTEROW|%lu\n",rwb);
     uint8_t *vetor = calloc(hei*rwb,sizeof(uint8_t));
-    uint8_t *pCurrent = vetor;
+    //uint8_t *pCurrent = vetor;
     for (uint32_t row = 0; row < hei; row++)
     {
         for (size_t i = 0; i < rwb; i++)
@@ -38,6 +39,21 @@ uint8_t * MatrizParaVetorJPEG(uint8_t** matriz, uint32_t hei, size_t rwb){
             
     }
     return vetor;
+}
+//A function that prints every decoded character onto stdout
+uint8_t  **RipHexTable(uint8_t ** matrix, uint32_t width, uint32_t height, int8_t delimeter){
+    size_t i;
+    fprintf(stdout,"[Output]: Heres the hex table:\n");
+    for (i = 0; i < height; i++){
+        size_t x;
+        
+        for (x = 0; x < width; x++){
+            printf("%x%c",matrix[i][x], delimeter);
+        }
+        printf("\n");
+    }
+    
+    return matrix;
 }
 //OBSOLETE
 uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, const int8_t *title){
