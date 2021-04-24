@@ -5,9 +5,9 @@ uint8_t ** VetorParaMatriz(uint8_t * vetor, size_t rwb, uint32_t hei){
     uint8_t **matriz;
     matriz=calloc(hei,sizeof(uint8_t *));
     for (size_t y = 0; y < sizeof(vetor); y++){
+        matriz[y]=malloc(rwb);
         for (size_t x= 0; x < rwb; x++){
-            matriz[y]=malloc(rwb);
-            matriz[y][x]=vetor[x*y];
+            matriz[y][x]=vetor[y*rwb+x];
         }
     }
     return matriz;
@@ -81,12 +81,13 @@ uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, co
 
 uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, uint8_t bitdepth,size_t rwb, const char *title){
     XImage *img;
+    fprintf(stdout, "[Debug]: Window will be created with dimensions %dx%d", wid, hei);
     gfx_open(&wid, &hei, (const char *)title); 
     img=gfxvetor_image(vetor, bitdepth, wid, hei, rwb);
     gfx_image(img, wid, hei);
     //gfx_flush();
-    gfx_color(255,10,20);
-    gfx_line(0,0,40,60);
+    //gfx_color(255,10,20);
+    //gfx_line(0,0,40,60);
     uint32_t oldwidth=wid;
     uint32_t oldheight=hei;
     //TODO fix this! 

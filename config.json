@@ -9,13 +9,7 @@
 	],
 	"settings":[
 		{
-			"Resolution": [1920,1080],
-			"Terminal":[
-				{
-					"Delimeter":"1", 
-					"Pixels": "#FFFFFF"
-				}
-			]
+			"Resolution": [1920,1080]
 		}
 	],
 	"images":[

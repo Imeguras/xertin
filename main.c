@@ -47,9 +47,11 @@ int32_t main(int argc, char *argv[]){
                 png_uint_32 pwidth=0, pheight=0;
                 pngimp image={NULL, NULL, NULL};
                 image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
-                //RipHexTable((uint8_t **)image.vetor, pwidth,pheight, ',');
-                /*uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
-                pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);*/
+                if (args.hex_given){
+                    image.vetor=RipHexTable((uint8_t **)image.vetor, pwidth,pheight, ',');
+                }
+                uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
+                pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);
                 pngread_destroy(image);
                 //free(pont);
                 //free_image_data(matrix, pheight);
@@ -62,11 +64,15 @@ int32_t main(int argc, char *argv[]){
                 uint32_t pwidth=0, pheight=0;
                
                 uint8_t *vetor=NULL; 
-                uint8_t **matriz=NULL; 
                 vetor=readjpeg_verificar(vetor, args.decode_arg, &rowbytes, &pwidth, &pheight);
-                matriz=VetorParaMatriz(vetor, rowbytes, pheight);
-                matriz=RipHexTable(matriz, rowbytes, pheight,',');
-                //vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes,args.decode_arg);
+                if (args.hex_given){
+                    uint8_t **matriz=NULL;
+                    matriz=VetorParaMatriz(vetor, rowbytes, pheight);
+                    matriz=RipHexTable(matriz, rowbytes, pheight,',');
+                    //free(matriz);
+                    //matriz=NULL;
+                }
+                vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes,args.decode_arg);
 
                 //vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes, args.decode_arg)
                 //matriz=JanelaEescreve(matriz, pwidth, pheight, args.decode_arg);

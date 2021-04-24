@@ -1,4 +1,5 @@
 #include "jpegdec.h"
+#include <jpeglib.h>
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
@@ -48,14 +49,17 @@ uint8_t* readjpeg_verificar(uint8_t* vetor, const char *file, size_t *rwb, uint3
 	jpeg_create_decompress(&info);
 	jpeg_stdio_src(&info, fp);
 	jpeg_read_header(&info, TRUE);
-	info.out_color_space=JCS_EXT_BGR;
+	info.out_color_space=JCS_EXT_BGRA;
 	jpeg_calc_output_dimensions(&info);
 	
 	jpeg_start_decompress(&info);
 	fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
-	int numChannels = info.num_components;
+	int numChannels = info.output_components;
+	
+	fprintf(stdout, "[Debug] Number of Color Component(R,G,B,A etc...): %d\n", numChannels);
+	
 	//fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
-	*rwb = info.output_width * numChannels;//*info.data_precision;
+	*rwb = info.output_width * numChannels*info.data_precision/8;//;//*info.data_precision;
 	*wid = info.output_width; 
 	*hei = info.output_height;
 
@@ -100,15 +104,15 @@ uint8_t* readjpeg_verificar(uint8_t* vetor, const char *file, size_t *rwb, uint3
 		//put_scanline_someplace(buffer[0], row_stride);
   	}
 
-    //(void) jpeg_finish_decompress(&info);
-	//jpeg_destroy_decompress(&info);
+    (void) jpeg_finish_decompress(&info);
+	jpeg_destroy_decompress(&info);
 	fclose(fp);
 	return vetor;
 }
 //TOOPTMIZE LASTINDEX ONLY FEASIBLY GOES TO UNSIGNED INT
 uint8_t* readjpeg_defragment(uint8_t* DefragVetor, uint8_t* vetor, size_t rwb, size_t lastindex){
 	DefragVetor=realloc(DefragVetor,(rwb*lastindex+rwb*SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA)*sizeof(uint8_t));
-	uint8_t *ref=DefragVetor+(rwb*lastindex);
+	uint8_t *ref=DefragVetor+(rwb*(lastindex-1));
 	memcpy(ref, vetor, rwb*SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA);
 	return DefragVetor;
 }
