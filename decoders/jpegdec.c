@@ -54,8 +54,8 @@ uint8_t* readjpeg_verificar(uint8_t* vetor, const char *file, size_t *rwb, uint3
 	jpeg_start_decompress(&info);
 	fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
 	int numChannels = info.num_components;
-	fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
-	*rwb = info.output_width * numChannels*info.data_precision;
+	//fprintf(stdout, "[Debug] Data precision: %d\n", info.data_precision);
+	*rwb = info.output_width * numChannels;//*info.data_precision;
 	*wid = info.output_width; 
 	*hei = info.output_height;
 
@@ -70,7 +70,7 @@ uint8_t* readjpeg_verificar(uint8_t* vetor, const char *file, size_t *rwb, uint3
    * In this example, we need to make an output work buffer of the right size.
    */
   /* JSAMPLEs per row in output buffer */
-  JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
+  //JSAMPROW row_pointer[1];      /* pointer to JSAMPLE row[s] */
   JSAMPARRAY buffer; 
   
   //TODO MAKE MULTITHREADING FOR BIGGER IMAGES
