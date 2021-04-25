@@ -48,7 +48,7 @@ uint8_t  **RipHexTable(uint8_t ** matrix, uint32_t width, uint32_t height, int8_
         size_t x;
         
         for (x = 0; x < width; x++){
-            printf("%x%c",matrix[i][x], delimeter);
+            fprintf(stdout,"%x%c",matrix[i][x], delimeter);
         }
         printf("\n");
     }
