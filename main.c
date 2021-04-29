@@ -80,8 +80,7 @@ int32_t main(int argc, char *argv[]){
 					fprintf(stderr,"[Error]: The file you are trying to open is not supported");
 				break;
 			}
-		}
-		
+		}	
 	}
 	
 	cmdline_parser_free(&args);
