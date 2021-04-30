@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <stdio.h>
 #include <stdarg.h>
-#include <stdint.h>
 //PNG RELATED MACROS 
 #define GENERAL_PNG_SIG_SIZE 8
 #define SPECIFIC_LIBPNG_ZLIB_BUFFER_COMPRESSION_BYTE_SIZE 8192
@@ -22,8 +21,6 @@
 #define GENERAL_MAXSIZE_OF_DIRECTORYS 255
 #define SPECIFIC_JSON_DIRECTORY "config.json"
 #define SPECIFIC_JSON_DEFAULTCONFIG "{\n\t\"size\":%lu,\n\t\"directories\":[\n\t\t{\n\t\t\t\"Workspace\": \"%s\",\n\t\t\t\"Objects\": \"/obj\",\n\t\t\t\"Coredumps\": \"/coredump\"\n\t\t}\n\t],\n\t\"settings\":[\n\t\t{\n\t\t\t\"Resolution\": [%d,%d]\n\t\t}\n\t],\n\t\"images\":[\n\t\t{\n\t\t\t\"TransparencyBackground\":[\n\t\t\t\t{\n\t\t\t\t\t\"Size\":\"1\", \n\t\t\t\t\t\"Pixels\": \"#FFFFFF\"\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"FrameBackground\":[\n\t\t\t\t{\n\t\t\t\t\t\"Size\":\"1\",\n\t\t\t\t\t\"Pixels\":\"#FFFFFF\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}"
- 
-void abort_(const char * s, ...);
-uint32_t strtouint(uint8_t c[4]);
+ void abort_(const char * s, ...);
 #endif
 
