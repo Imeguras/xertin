@@ -14,7 +14,7 @@
 #include "decoders/pngdec.h"
 #include "decoders/jpegdec.h"
 #include "decoders/gifdec.h"
-json_object * config;
+json_object * config = NULL;
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 //uint8_t ** (*JanelaEescrevePTR)(uint8_t **, uint32_t, uint32_t, const int8_t *);
 int32_t main(int argc, char *argv[]){
@@ -36,68 +36,57 @@ int32_t main(int argc, char *argv[]){
         if(!ext){
             fprintf(stderr,"[Error]: no file extension found, are you opening a text file?");
         }else{
-            fprintf(stdout,"\nExtension is %s\n",ext+1);
-            //todo this is a dozie maybe i can just do some basic "hash" or something to be faster in a case instead of doing the calculations over and over again
-            if (!strcmp((char *)ext+1, "png")){
-                
-                if(startpng_init(args)){
-                    fprintf(stderr, "[TODO] something went to shit");
-                }
-                size_t rowbytes=0;
-                png_uint_32 pwidth=0, pheight=0;
-                pngimp image={NULL, NULL, NULL};
-                image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
-                if (args.hex_given){
-                    image.vetor=RipHexTable((uint8_t **)image.vetor, pwidth,pheight, ',');
-                }
-                uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
-                pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);
-                pngread_destroy(image);
-                //free(pont);
-                //free_image_data(matrix, pheight);
-                
-            }else if (!strcmp((char *)ext+1, "jpg") || !strcmp((char *)ext+1, "jpeg")){
-                if(startjpeg_init(args)){
-                    fprintf(stderr, "[TODO] something went to shit");
-                }
-                size_t rowbytes=0;
-                uint32_t pwidth=0, pheight=0;
-               
-                uint8_t *vetor=NULL; 
-                vetor=readjpeg_verificar(vetor, args.decode_arg, &rowbytes, &pwidth, &pheight);
-                if (args.hex_given){
-                    uint8_t **matriz=NULL;
-                    matriz=VetorParaMatriz(vetor, rowbytes, pheight);
-                    matriz=RipHexTable(matriz, rowbytes, pheight,',');
-                    //free(matriz);
-                    //matriz=NULL;
-                }
-                vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes,args.decode_arg);
-
-                //vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes, args.decode_arg)
-                //matriz=JanelaEescreve(matriz, pwidth, pheight, args.decode_arg);
-                //uint8_t *(*JanelaEescrevePTR)(png_bytepp, uint32_t, uint32_t, const int8_t *);
-                //JanelaEescrevePTR=&JanelaEescreve;
-                //vetor=JanelaEescreve(vetor, pwidth, pheight, (const int8_t *)args.decode_arg);
-                //
-                free(vetor);
-                vetor=NULL;
-                //pngread_destroy(image);
-                //free(matriz);
-                //free_image_data(matrix, pheight);
-                
-            }else if (!strcmp((char *)ext+1, "gif")){
-                
-            }else{
-                fprintf(stderr,"[Error]: The file you are trying to open is not supported");
-            }
-        }
-    }
-    
-    cmdline_parser_free(&args);
-    return 0;
+			fprintf(stdout,"\nExtension is %s\n",ext+1);
+			//todo this is a dozie maybe i can just do some basic "hash" or something to be faster in a case instead of doing the calculations over and over again
+			fprintf(stdout,"[Info] The file extension was translated to %d",strtouint((uint8_t *)ext+1));
+			size_t rowbytes=0;
+			png_uint_32 pwidth=0, pheight=0;
+			switch (strtouint((uint8_t *)ext+1)) {
+				case 1886283520:
+					if(startpng_init(args)){
+						fprintf(stderr, "[TODO] something went to shit");
+					}
+					pngimp image={NULL, NULL, NULL};
+					image=readpng_verificar(args.decode_arg, &rowbytes, &pwidth, &pheight);
+					if (args.hex_given){
+						image.vetor=RipHexTable((uint8_t **)image.vetor, pwidth,pheight, ',');
+					}
+					uint8_t *pont=MatrizParaVetor((uint8_t **)image.vetor, pheight, rowbytes);
+					pont=displaygrap_winrite(pont,pwidth, pheight, 8, rowbytes, args.decode_arg);
+					pngread_destroy(image);
+					//free(pont);
+					//free_image_data(matrix, pheight);
+				break;
+				case 1785751296:
+				case 1785750887:
+					if(startjpeg_init(args)){
+						fprintf(stderr, "[TODO] something went to shit");
+					}
+					uint8_t *vetor=NULL; 
+					vetor=readjpeg_verificar(vetor, args.decode_arg, &rowbytes, &pwidth, &pheight);
+					if (args.hex_given){
+						uint8_t **matriz=NULL;
+						matriz=VetorParaMatriz(vetor, rowbytes, pheight);
+						matriz=RipHexTable(matriz, rowbytes, pheight,',');
+						//free(matriz);
+						//matriz=NULL;
+					}
+					vetor=displaygrap_winrite(vetor,pwidth, pheight, 8, rowbytes,args.decode_arg);
+					free(vetor);
+					vetor=NULL;
+					
+				break;
+				default:
+					fprintf(stderr,"[Error]: The file you are trying to open is not supported");
+				break;
+			}
+		}	
+	}
+	if(writejsonfile((const int8_t*)SPECIFIC_JSON_DIRECTORY, config)){
+		fprintf(stderr, "TODO somethingWentWrong" );
+	}
+    return 0; 
 }
-
 uint8_t vreadable(char *string,uint32_t *favouredsize){
     struct stat fs;
     if (stat(string, &fs) == -1) {

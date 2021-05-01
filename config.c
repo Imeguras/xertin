@@ -1,5 +1,12 @@
 #include "config.h"
+#include "funcaux.h"
+#include <json-c/json_object.h>
+#include <json-c/json_types.h>
+#include <stdint.h>
+#include <stdio.h>
 struct json_object *parsed_json;
+//TODO lets not write that much times 
+static uint8_t dirtyBit=0; 
 void createjson(){
     //TODO MULTIPLE DISPLAY https://stackoverflow.com/questions/25849045/screen-resolution-in-c-for-linux
     Display* d = XOpenDisplay(NULL);
@@ -25,40 +32,41 @@ void createjson(){
     fclose(json);
 }
 json_object* readjson_init(const int8_t *filename){
-    FILE *fp;
-	size_t bytespan;
+    FILE *fp=NULL;
     uint32_t pos; 
-    uint8_t pos2;
-    //TODO PROPER CHECKING 
-    int8_t *needle; 
+    int8_t *needle= NULL; 
     fp = fopen((const char *)filename,"r");
     if(fp==NULL){
         abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
     }
-    //TOOPTIMISE is this feasable? or might as well just have a giant buffer? I WAS ULTRA STUPID, a very simple option will be introduced latter 
-    needle=malloc(1);
-    do
-    {
-        if(*needle==':'){
-            pos2=ftell(fp);
-        }
-        fread(needle, 1, 1,fp);
-    } while (*needle!=',');
-    pos=ftell(fp)-1;
-    fseek(fp, pos2, SEEK_SET);
-    needle=realloc(needle, pos-pos2);
-    fread(needle, 1, pos-pos2, fp);
+    needle=malloc(1*sizeof(int8_t));
+    if (!needle){
+        abort_(GENERAL_ALLOC_ERROR, " ERR02 ");
+    }
+    *needle='\0';
+    fseek(fp, 0, SEEK_END);
+    pos=ftell(fp);
     #ifdef SHOW_DEBUG
-        printf("\n%s\n",needle);
+        fprintf(stdout, "The file size is: %d\n", pos);
+    #endif 
+    
+    fseek(fp, 0, SEEK_SET);
+    needle=realloc(needle, pos);
+    if(fread(needle, 1, pos, fp)!= pos){
+        fprintf(stderr, GENERAL_READ_FILE_ERROR, "ERR10");
+    }
+    #ifdef SHOW_DEBUG
+        fprintf(stdout, "Config is:\n%s\n", needle);
     #endif 
 	json_object *parsed_json;
-    bytespan=atoi((char *)needle);
-    needle=realloc(needle,bytespan);
-    fseek(fp, 0, SEEK_SET);
-    fread(needle, sizeof(uint8_t), bytespan, fp);
     parsed_json = json_tokener_parse((const char *)needle);
-    //TODO PROPER CLOSING 
-    fclose(fp);
+    updatejson_size(parsed_json, pos);
+    free(needle);
+    needle=NULL;
+    if(fclose(fp)){
+        //TODO Documentate every othercode
+        fprintf(stderr, GENERAL_CLOSING_READ_FILE_ERROR, "ERR10");
+    }
     return parsed_json; 
 }
 void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
@@ -76,7 +84,30 @@ void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
         }
     }
 }
-
+uint8_t updatejson_size(json_object *obs, size_t size){
+    uint8_t errList=0; 
+    json_object *sizeO=NULL;
+    json_object_object_get_ex(obs, "size", &sizeO);
+    json_object_set_uint64(sizeO, (uint64_t) size);
+    return errList;
+}
+uint8_t writejsonfile(const int8_t *filename, json_object *obs){
+    uint8_t errList=0;
+    FILE *fp=NULL;
+    if ((fp = fopen((const char *)filename, "w+")) == NULL){
+        errList+=2;  
+        fprintf(stderr, "TODO-Something went wrong");
+    }
+    if(fprintf(fp, "%s", json_object_get_string(obs))!=json_object_get_string_len(obs)){
+        errList++; 
+        fprintf(stderr, "TODO-Something went wrong");
+    }
+    if (fclose(fp) != 0){
+        fprintf(stderr, "TODO-Something went wrong");
+    }
+    
+    return errList;
+}
 /*void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix){
     *size=json_object_get_int(obs);
     matrix=malloc((*size)*sizeof(uint8_t));
