@@ -17,10 +17,12 @@
 //JPEG RELATED MACROS
 #define SPECIFIC_LIBJPEG_SCANROWS_EMPREITADA 1
 
-#define GENERAL_CLOSING_READ_FILE_ERROR "[Error]||Welp while closing the file to read something got fucked, try restarting the program? %s"
-#define GENERAL_OPENING_READ_FILE_ERROR "[Error]||Welp while opening the file to read something got fucked, try restarting the program? %s"
-#define GENERAL_READ_FILE_ERROR "[Error]||Welp while reading the file something got fucked, try restarting the program? %s"
-#define GENERAL_ALLOC_ERROR "[ERROR]||Welp while allocating space in memory something got fucked, try restarting the program? %s"
+#define GENERAL_DIRING_ERROR "Welp there was a error in gathering your current directory, this might be because of invalid characters, weird characters, obscure namesets, or the directory name is simply too large. Try just being normal for once? %s"
+#define GENERAL_CLOSING_FILE_ERROR "Welp this is rare, while closing the file something got fucked, check this https://www.man7.org/linux/man-pages/man2/close.2.html#ERRORS or try restarting the program? %s"
+#define GENERAL_OPENING_FILE_ERROR "Welp while opening the file to read something got fucked, check this https://www.man7.org/linux/man-pages/man2/open.2.html#ERRORS or try restarting the program? %s"
+#define GENERAL_READ_FILE_ERROR "Welp while reading the a file something got fucked, this shouldn't close the file, but if it did try restarting? %s"
+#define GENERAL_WRITE_FILE_ERROR "Welp while writting the file something got fucked, this problem may range from lack of perms, space, signals, etc... Have you spilled your coffee into your machine? %s"
+#define GENERAL_ALLOC_ERROR "Welp while allocating space in memory something got fucked, if restarting the program won't work have you tried turning it off and on again? %s"
 #define GENERAL_MAXSIZE_OF_DIRECTORYS 255
 #define SPECIFIC_JSON_DIRECTORY "config.json"
 #define SPECIFIC_JSON_DEFAULTCONFIG "{\n\t\"size\":%lu,\n\t\"directories\":[\n\t\t{\n\t\t\t\"Workspace\": \"%s\",\n\t\t\t\"Objects\": \"/obj\",\n\t\t\t\"Coredumps\": \"/coredump\"\n\t\t}\n\t],\n\t\"settings\":[\n\t\t{\n\t\t\t\"Resolution\": [%d,%d]\n\t\t}\n\t],\n\t\"images\":[\n\t\t{\n\t\t\t\"TransparencyBackground\":[\n\t\t\t\t{\n\t\t\t\t\t\"Size\":\"1\", \n\t\t\t\t\t\"Pixels\": \"#FFFFFF\"\n\t\t\t\t}\n\t\t\t],\n\t\t\t\"FrameBackground\":[\n\t\t\t\t{\n\t\t\t\t\t\"Size\":\"1\",\n\t\t\t\t\t\"Pixels\":\"#FFFFFF\"\n\t\t\t\t}\n\t\t\t]\n\t\t}\n\t]\n}"

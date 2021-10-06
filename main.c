@@ -18,6 +18,7 @@ json_object * config = NULL;
 uint8_t vreadable(char *string,uint32_t *favouredsize);
 //uint8_t ** (*JanelaEescrevePTR)(uint8_t **, uint32_t, uint32_t, const int8_t *);
 int32_t main(int argc, char *argv[]){
+	
     struct gengetopt_args_info args; 
     
     if (cmdline_parser(argc, argv, &args)!= 0 ){
@@ -27,7 +28,8 @@ int32_t main(int argc, char *argv[]){
     if(!vreadable(SPECIFIC_JSON_DIRECTORY,&favblock)){
         createjson();
     }
-    config=readjson_init((const int8_t*)SPECIFIC_JSON_DIRECTORY);
+	
+	config=readjson_init((const int8_t*)SPECIFIC_JSON_DIRECTORY);
     gfx_start(config);
     if (args.decode_given&&vreadable(args.decode_arg,&favblock)){
         int8_t *ext;

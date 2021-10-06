@@ -4,6 +4,7 @@
 #include <json-c/json_types.h>
 #include <stdint.h>
 #include <stdio.h>
+#include <sys/types.h>
 struct json_object *parsed_json;
 //TODO lets not write that much times 
 static uint8_t dirtyBit=0; 
@@ -15,21 +16,16 @@ void createjson(){
     int8_t *dir=NULL; 
     dir=(int8_t *)GetCurrentDir((char *)dir, GENERAL_MAXSIZE_OF_DIRECTORYS);
     if (dir == NULL){
-        fprintf(stderr, "TODO, probs the size of dir was to big or some problem ");
-        //TODO DOCOMENTATE THIS 
-        exit(20); 
+        //TODO documentate the proper error code
+        ERROR(1, GENERAL_DIRING_ERROR, "ERR20");        
     }
-    //fprintf(stdout, "\nEHEGJEAN %s\n", dir);
-    json=fopen(SPECIFIC_JSON_DIRECTORY, "w");
-    //TODO BETTER CHECKING OF THE WRITTING(PERMISSIONS,etc...)
-    if (json==NULL){
-        abort_(GENERAL_OPENING_READ_FILE_ERROR, "TODO FIX THIS ERROR MESSAGE");
-    }
-    //TODO do the counting properly stop being lazy 
-    fprintf(json, SPECIFIC_JSON_DEFAULTCONFIG,sizeof(SPECIFIC_JSON_DEFAULTCONFIG)+strlen((const char *)dir)+sizeof(s->width)+sizeof(s->height), dir, s->width, s->height);
+    parsed_json = json_object_new_object();
+    //temp_key
+    //json_object_object_add(parsed_json, ,);
+    //TODO use the parser so nothing goes wrong
+    //fprintf(json, SPECIFIC_JSON_DEFAULTCONFIG,sizeof(SPECIFIC_JSON_DEFAULTCONFIG)+strlen((const char *)dir)+sizeof(s->width)+sizeof(s->height), dir, s->width, s->height);
     //TODO CHECK IF THIS GOES ALRIGHT
     XCloseDisplay(d);
-    fclose(json);
 }
 json_object* readjson_init(const int8_t *filename){
     FILE *fp=NULL;
@@ -37,11 +33,11 @@ json_object* readjson_init(const int8_t *filename){
     int8_t *needle= NULL; 
     fp = fopen((const char *)filename,"r");
     if(fp==NULL){
-        abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
+        //abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
     }
     needle=malloc(1*sizeof(int8_t));
     if (!needle){
-        abort_(GENERAL_ALLOC_ERROR, " ERR02 ");
+        //abort_(GENERAL_ALLOC_ERROR, " ERR02 ");
     }
     *needle='\0';
     fseek(fp, 0, SEEK_END);
@@ -65,7 +61,7 @@ json_object* readjson_init(const int8_t *filename){
     needle=NULL;
     if(fclose(fp)){
         //TODO Documentate every othercode
-        fprintf(stderr, GENERAL_CLOSING_READ_FILE_ERROR, "ERR10");
+        fprintf(stderr, GENERAL_CLOSING_FILE_ERROR, "ERR10");
     }
     return parsed_json; 
 }
@@ -92,21 +88,19 @@ uint8_t updatejson_size(json_object *obs, size_t size){
     return errList;
 }
 uint8_t writejsonfile(const int8_t *filename, json_object *obs){
-    uint8_t errList=0;
+    size_t lines=0;
     FILE *fp=NULL;
-    if ((fp = fopen((const char *)filename, "w+")) == NULL){
-        errList+=2;  
-        fprintf(stderr, "TODO-Something went wrong");
+    if ((fp =fopen((const char *)filename, "w")) == NULL){ 
+       ERROR(1, GENERAL_OPENING_FILE_ERROR, "ERRX");//TODO ADD soomething
     }
-    if(fprintf(fp, "%s", json_object_get_string(obs))!=json_object_get_string_len(obs)){
-        errList++; 
-        fprintf(stderr, "TODO-Something went wrong");
+    lines=fprintf(fp, "%s", json_object_get_string(obs));
+    if (lines!=json_object_get_string_len(obs)){
+        WARNING(GENERAL_WRITE_FILE_ERROR, "...Yep the config file didn't like that");
     }
     if (fclose(fp) != 0){
-        fprintf(stderr, "TODO-Something went wrong");
+        ERROR(1, GENERAL_CLOSING_FILE_ERROR, "ERRX+1");
     }
-    
-    return errList;
+    return lines; 
 }
 /*void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix){
     *size=json_object_get_int(obs);

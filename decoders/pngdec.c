@@ -30,7 +30,8 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		FILE *fp;
 		if ((fp = fopen(file, "rb")) == NULL){
 			fp = NULL;
-			abort_(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
+			//ERROR()
+			//ABORT(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
 		}
 		int8_t *pop;
 		pop=malloc(GENERAL_PNG_SIG_SIZE * sizeof(char));
