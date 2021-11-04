@@ -1,7 +1,4 @@
-# Makefile que facilmente se adapta a qualquer tipo de exercicio
-# author Vitor Carreira
-# date 2009-09-23
-#
+#Modificado por mim o autor original Vitor carreira
 CC=cc
 # Bibliotecas a incluir
 LIBS=-lX11 -lpng -lz -lpthread -ljson-c -ljpeg

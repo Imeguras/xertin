@@ -15,9 +15,9 @@
     #define GetCurrentDir getcwd
 #endif
 void createjson(void);
-uint8_t updatejson_size(json_object *obs, size_t size);
 json_object* readjson_init(const int8_t *filename);
 void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei);
 uint8_t writejsonfile(const int8_t *filename, json_object *obs);
+void returnjson_general(json_object *obs, int va_argc, ...);
 //void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix);
 #endif

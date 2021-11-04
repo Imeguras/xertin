@@ -1,7 +1,6 @@
 *.o
 *.coredump
 *~
-xertim
 *.bak
 args.h
 args.c
