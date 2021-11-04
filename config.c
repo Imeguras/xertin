@@ -90,35 +90,45 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 		strcpy((char *) buf,(char *)va_arg(valist,int*));
 		struct json_object *temp_obj=obs; 
 		char *tkn; 
-		tkn=(int8_t *)strtok((char *) buf, "-");
+		tkn=strtok((char *) buf, "-");
 		while (tkn) {
-			tkn=(int8_t *)strtok(NULL, "-");
 			/*int8_t delimeter=buf[0]; 
 			buf=buf[1];*/ 
-			switch (buf[0]) {
+			switch (tkn[0]) {
 				case '>':
-					if(!json_object_object_get_ex(temp_obj, buf+1, &temp_obj)){
-						WARNING("Failed to find a object by the name of %s", buf+1);
+					if(!json_object_object_get_ex(temp_obj, tkn+1, &temp_obj)){
+						WARNING("Failed to find a object by the name of %s", tkn+1);
 						return;
 					}
 				break;
 				case '|':
-					if(!(temp_obj=json_object_array_get_idx(temp_obj, buf+1))){
-						WARNING("Failed to grab the %s'th element of the array",buf+1);
+					if(!(temp_obj=json_object_array_get_idx(temp_obj, atoi(tkn+1)))){
+						WARNING("Failed to grab the %s'th element of the array",tkn+1);
 						return;
 					}
 				break;
-				case '=':
-				case '\0':
-					DEBUG("")
-					for (uint32_t i = 0; i > (va_argc-2); i--){
-						*(va_arg(valist,int*))=json_object_get_int(temp_obj);
+				case '*':
+					DEBUG(tkn);
+					for (uint32_t i = 0; i < (va_argc-2); i++){
+						struct json_object *loc_obj;
+						if(!(loc_obj=json_object_array_get_idx(temp_obj, i))){
+							WARNING("Failed to grab the %s'th element of the array",tkn+1);
+							return;
+						}
+						int * input_parameter=va_arg(valist,int*); 
+						
+						int result=json_object_get_int(loc_obj); 
+						DEBUG(" %d, result: %d, index: %d", *input_parameter, result, i);
+						*input_parameter=result; 
 					}
 				break;
 				default:
+					
 					WARNING("Theres an incorrect field on the config");
 				break; 
+				
 			}
+			tkn=strtok(NULL, "-");
 		}
 		
 	}else{

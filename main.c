@@ -30,9 +30,9 @@ int32_t main(int argc, char *argv[]){
         createjson();
     }
 	config=readjson_init((const int8_t*)SPECIFIC_JSON_DIRECTORY);
-	int *width, *heigh; 
-	returnjson_general(config, 5, sizeof("->settings-|0->resolution-"), "->settings-|0->resolution-", width, heigh);
-	DEBUG("done: %d %d", *width, *heigh);
+	int width=0, heigh=0; 
+	returnjson_general(config, 4, sizeof("->settings-|0->resolution-="), "->settings-|0->resolution-*", &width, &heigh);
+	DEBUG("done: %d %d", width, heigh);
     gfx_start(config);
 
     if (args.decode_given&&vreadable(args.decode_arg)){
