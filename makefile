@@ -17,7 +17,7 @@ PROGRAM=xertin
 PROGRAM_OPT=args
 FOLDERS=decoders 
 EVERYFILE= $(patsubst %, %/*.c, $(FOLDERS))
-PROGRAM_OBJS=main.o funcaux.o pngdec.o jpegdec.o bmpdec.o gifdec.o grapdec.o gfx.o config.o ${PROGRAM_OPT}.o
+PROGRAM_OBJS=main.o funcaux.o gendec.o pngdec.o jpegdec.o bmpdec.o gifdec.o grapdec.o gfx.o config.o ${PROGRAM_OPT}.o
 PROGRAM_OBJSDIR=$(patsubst %, obj/%, $(PROGRAM_OBJS))
 .PHONY: clean
 
@@ -42,19 +42,21 @@ config.o: config.c config.h funcaux.h
 funcaux.o: funcaux.c funcaux.h
 gfx.o: gfx.c gfx.h config.h funcaux.h
 grapdec.o: grapdec.c grapdec.h gfx.h config.h funcaux.h
-main.o: main.c decoders/pngdec.h funcaux.h ${PROGRAM_OPT}.h config.h funcaux.h decoders/jpegdec.h decoders/gifdec.h grapdec.h gfx.h config.h
+main.o: main.c decoders/pngdec.h ${PROGRAM_OPT}.h config.h funcaux.h decoders/jpegdec.h decoders/gifdec.h grapdec.h gfx.h config.h
 
+gendec.o: decoders/gendec.o
+decoders/gendec.o: decoders/gendec.c decoders/gendec.c decoders/gendec.h funcaux.h
 bmpdec.o: decoders/bmpdec.o
-decoders/bmpdec.o: decoders/bmpdec.c decoders/bmpdec.h ${PROGRAM_OPT}.h config.h funcaux.h funcaux.h
+decoders/bmpdec.o: decoders/bmpdec.c decoders/bmpdec.h ${PROGRAM_OPT}.h config.h funcaux.h
 
 gifdec.o: decoders/gifdec.o
-decoders/gifdec.o: decoders/gifdec.c decoders/gifdec.h ${PROGRAM_OPT}.h funcaux.h config.h funcaux.h
+decoders/gifdec.o: decoders/gifdec.c decoders/gifdec.h ${PROGRAM_OPT}.h funcaux.h config.h 
 
 jpegdec.o: decoders/jpegdec.o
-decoders/jpegdec.o: decoders/jpegdec.c decoders/jpegdec.h ${PROGRAM_OPT}.h funcaux.h config.h funcaux.h
+decoders/jpegdec.o: decoders/jpegdec.c decoders/jpegdec.h ${PROGRAM_OPT}.h funcaux.h config.h
 
 pngdec.o: decoders/pngdec.o
-decoders/pngdec.o: decoders/pngdec.c decoders/pngdec.h funcaux.h ${PROGRAM_OPT}.h config.h funcaux.h
+decoders/pngdec.o: decoders/pngdec.c decoders/pngdec.h funcaux.h ${PROGRAM_OPT}.h config.h 
 
 %.o : %.c
 	${CC} ${CFLAGS}-c $*.c -o obj/$(patsubst decoders/%,%,$@)

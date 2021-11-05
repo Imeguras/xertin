@@ -34,8 +34,8 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 			//ABORT(GENERAL_OPENING_READ_FILE_ERROR, " ERR01 ");
 		}
 		int8_t *pop;
-		pop=malloc(GENERAL_PNG_SIG_SIZE * sizeof(char));
-		readnum=fread(pop,sizeof(char),GENERAL_PNG_SIG_SIZE,fp);
+		pop=malloc(GENERAL_PNG_SIG_SIZE * sizeof(int8_t));
+		readnum=fread(pop,sizeof(int8_t),GENERAL_PNG_SIG_SIZE,fp);
 		if(readnum!=GENERAL_PNG_SIG_SIZE){
 			fclose(fp);
 			//ERR 5

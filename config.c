@@ -37,7 +37,7 @@ void createjson(){
     XCloseDisplay(d);
 }
 
-json_object* readjson_init(const int8_t *filename){
+json_object* readjson_init(const char *filename){
     FILE *fp=NULL;
     uint32_t pos; 
     int8_t *needle= NULL; 
@@ -73,7 +73,7 @@ json_object* readjson_init(const int8_t *filename){
     }
     return parsed_json; 
 }
-void returnjson_general(json_object *obs, int va_argc, ...){
+void returnjson_general(json_object *obs, int32_t va_argc, ...){
 	va_list valist;
 	if (va_argc<=1){
 		WARNING("To Lurk one needs to know the size of the instructions and the instructions themselves, at least two parameters must be sent");

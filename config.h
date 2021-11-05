@@ -18,8 +18,8 @@
 
 void writejson_close(void);
 void createjson(void);
-json_object* readjson_init(const int8_t *filename);
-void returnjson_general(json_object *obs, int va_argc, ...);
+json_object* readjson_init(const char *filename);
+void returnjson_general(json_object *obs, int32_t va_argc, ...);
 
 //void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix);
 #endif

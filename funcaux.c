@@ -87,7 +87,7 @@ void error(const char *file, const int line, int exitCode, char *fmt, ...)
     exit(exitCode);
 }
 //TOOPTIMIZE maybe macro it? 
-uint32_t strtouint(uint8_t c[4]){
+uint32_t strtouint(char c[4]){
     uint32_t result=0;
     result= (uint32_t)c[0]<< 24 | (uint32_t)c[1]<< 16 | (uint32_t)c[2]<< 8 | (uint32_t)c[3];
     return result;

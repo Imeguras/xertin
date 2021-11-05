@@ -74,6 +74,6 @@ void error(const char *file, const int line, int exitCode, char *fmt, ...);
 #define ERROR(exitCode, ...) \
 	error(__FILE__, __LINE__, (exitCode), __VA_ARGS__)
 
-uint32_t strtouint(uint8_t c[4]);
+uint32_t strtouint(char c[4]);
 #endif
 
