@@ -30,9 +30,6 @@ int32_t main(int argc, char *argv[]){
         createjson();
     }
 	config=readjson_init((const int8_t*)SPECIFIC_JSON_DIRECTORY);
-	int width=0, heigh=0; 
-	returnjson_general(config, 4, sizeof("->settings-|0->resolution-="), "->settings-|0->resolution-*", &width, &heigh);
-	DEBUG("done: %d %d", width, heigh);
     gfx_start(config);
 
     if (args.decode_given&&vreadable(args.decode_arg)){
@@ -40,7 +37,8 @@ int32_t main(int argc, char *argv[]){
         //TODO well i tried finding a fuction and it seems that this one is pretty good it just a extra r in code too
         ext = (int8_t *)strrchr(args.decode_arg, '.');
         if(!ext){
-            	(stderr,"[Error]: no file extension found, are you opening a text file?");
+			//TODO
+            	ERROR(1,"no file extension found, are you opening a text file?");
         }else{
 			fprintf(stdout,"\nExtension is %s\n",ext+1);
 			//todo this is a dozie maybe i can just do some basic "hash" or something to be faster in a case instead of doing the calculations over and over again
@@ -88,9 +86,7 @@ int32_t main(int argc, char *argv[]){
 			}
 		}	
 	}
-	/*if(writejson_scratch((const int8_t*)SPECIFIC_JSON_DIRECTORY, config)){
-		fprintf(stderr, "TODO somethingWentWrong" );
-	}*/
+	writejson_close();
     return 0; 
 }
 uint8_t vreadable(char *string){

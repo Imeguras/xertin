@@ -17,9 +17,8 @@ static int saved_xpos = 0;
 static int saved_ypos = 0;
 void gfx_start(json_object *obj){
 	obs=obj;
-
-	//printf("IEBhsaghei");
-	returnjson_resolution(obs, &maxwidth, &maxheight);
+	returnjson_general(obs, 4, strlen("->settings-|0->resolution-*"), "->settings-|0->resolution-*", &maxwidth, &maxheight);
+	//returnjson_resolution(obs, &, &maxheight);
 }
 void gfx_open(uint32_t *width, uint32_t *height, const char *title){
 	

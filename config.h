@@ -7,6 +7,7 @@
 #include <string.h>
 #include "funcaux.h"
 #include <X11/Xlib.h>
+//#define RETURNJSON_GENERAL(obs,...) (returnjson_general(obs,strlen()))
 #ifdef WINDOWS
     #include <direct.h>
     #define GetCurrentDir _getcwd
@@ -14,10 +15,11 @@
     #include <unistd.h>
     #define GetCurrentDir getcwd
 #endif
+
+void writejson_close(void);
 void createjson(void);
 json_object* readjson_init(const int8_t *filename);
-void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei);
-uint8_t writejsonfile(const int8_t *filename, json_object *obs);
 void returnjson_general(json_object *obs, int va_argc, ...);
+
 //void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix);
 #endif

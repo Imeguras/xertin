@@ -15,7 +15,6 @@ void createjson(){
     //TODO MULTIPLE DISPLAY https://stackoverflow.com/questions/25849045/screen-resolution-in-c-for-linux
     Display* d = XOpenDisplay(NULL);
     Screen*  s = DefaultScreenOfDisplay(d);
-    FILE *json; 
     int8_t *dir=NULL; 
     dir=(int8_t *)GetCurrentDir((char *)dir, GENERAL_MAXSIZE_OF_DIRECTORYS);
     if (dir == NULL){
@@ -65,7 +64,6 @@ json_object* readjson_init(const int8_t *filename){
     #ifdef SHOW_DEBUG
         fprintf(stdout, "Config is:\n%s\n", needle);
     #endif 
-	json_object *parsed_json;
     parsed_json = json_tokener_parse((const char *)needle);
     free(needle);
     needle=NULL;
@@ -83,6 +81,7 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 	}
 	va_start(valist, va_argc);
 	
+	
 	int32_t bufferSize=va_arg(valist, int);
 	int8_t *buf = NULL;
 	buf = malloc(bufferSize*sizeof(int8_t));
@@ -92,8 +91,6 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 		char *tkn; 
 		tkn=strtok((char *) buf, "-");
 		while (tkn) {
-			/*int8_t delimeter=buf[0]; 
-			buf=buf[1];*/ 
 			switch (tkn[0]) {
 				case '>':
 					if(!json_object_object_get_ex(temp_obj, tkn+1, &temp_obj)){
@@ -108,8 +105,7 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 					}
 				break;
 				case '*':
-					DEBUG(tkn);
-					for (uint32_t i = 0; i < (va_argc-2); i++){
+					for (int32_t i = 0; i < (va_argc-2); i++){
 						struct json_object *loc_obj;
 						if(!(loc_obj=json_object_array_get_idx(temp_obj, i))){
 							WARNING("Failed to grab the %s'th element of the array",tkn+1);
@@ -118,7 +114,6 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 						int * input_parameter=va_arg(valist,int*); 
 						
 						int result=json_object_get_int(loc_obj); 
-						DEBUG(" %d, result: %d, index: %d", *input_parameter, result, i);
 						*input_parameter=result; 
 					}
 				break;
@@ -134,39 +129,16 @@ void returnjson_general(json_object *obs, int va_argc, ...){
 	}else{
 		ERROR(1, GENERAL_ALLOC_ERROR, "ERRX");
 	}
-
-	 
-	DEBUG((char *)buf);
 	free(buf);
 	buf=NULL;
-	
-   /* clean memory reserved for valist */
+
    va_end(valist);
 }
-void returnjson_resolution(json_object *obs, uint32_t *wid, uint32_t *hei){
-    json_object *resolution;
-    json_object *settings;
-    json_object *setting;
-    if(json_object_object_get_ex(obs, "settings",&settings)){
-        setting=json_object_array_get_idx(settings, 0);
-		if(json_object_object_get_ex(setting, "resolution",&resolution)){
-			*wid = (uint32_t)json_object_get_int(json_object_array_get_idx(resolution, 0));
-			*hei = (uint32_t)json_object_get_int(json_object_array_get_idx(resolution, 1));
-			#ifdef SHOW_DEBUG 
-				printf("\nResolution in configs is:%ux%u\n", *wid, *hei);
-            #endif
-        }
-    }
-}
 
-/*void returnjson_Background(json_object *obs, uint32_t *size, uint8_t **matrix){
-    *size=json_object_get_int(obs);
-    matrix=malloc((*size)*sizeof(uint8_t));
-    for (size_t y = 0; y < *size; ++y){
-        matrix[y]=malloc((*size)*sizeof(uint8_t));
-        for (size_t x = 0; x < *size; x++){
-            //matrix[y][x]=JSON_get
-        }
-   }
-   
-}*/
+void writejson_close(){
+	if(json_object_to_file(SPECIFIC_JSON_DIRECTORY, parsed_json)){
+		ERROR(1, GENERAL_CLOSING_FILE_ERROR, "Failed to write and close to config file, ERRX ");
+	}
+	json_object_put(parsed_json);
+	parsed_json =NULL; 
+}
