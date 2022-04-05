@@ -4,6 +4,8 @@ and it will end up being ultra modified if not entirely scrapped in a few commit
 ALSO TODO verbose thingie 
 */
 #include "gfx.h"
+#include <stdint.h>
+#include <stdio.h>
 
 static json_object *obs; 
 static Display *gfx_display=0;
@@ -17,7 +19,7 @@ static int saved_xpos = 0;
 static int saved_ypos = 0;
 void gfx_start(json_object *obj){
 	obs=obj;
-	returnjson_general(obs, 4, strlen("->settings-|0->resolution-*"), "->settings-|0->resolution-*", &maxwidth, &maxheight);
+	returnjson_general(obs, 4, strlen("->settings-|0->resolution-*")+1, "->settings-|0->resolution-*", &maxwidth, &maxheight);
 	//returnjson_resolution(obs, &, &maxheight);
 }
 void gfx_open(uint32_t *width, uint32_t *height, const char *title){
@@ -86,12 +88,17 @@ void gfx_point( int x, int y )
 void gfx_image(XImage *image, uint32_t wid, uint32_t hei){
 	XPutImage(gfx_display,gfx_window,gfx_gc,image, 0,0,0,0,wid,hei);
 }
-XImage *gfxvetor_image(uint8_t *data, uint8_t bitdepth, uint32_t wid, uint32_t hei, size_t rwb){
+XImage *gfxvetor_image(uint8_t *data, int bitdepth, uint32_t wid, uint32_t hei, size_t rwb){
 	XImage *image;
     Visual *visual = DefaultVisual(gfx_display,0);
+	
     int screen = DefaultScreen(gfx_display);
+	
     int dplanes = DisplayPlanes(gfx_display, screen);
-    image = XCreateImage(gfx_display, visual, dplanes, ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
+
+	//int dplanes = (wid*4*bitdepth/8==rwb) ? DisplayPlanes(gfx_display, screen) : bitdepth;
+
+    image = XCreateImage(gfx_display, visual, dplanes , ZPixmap, 0, (char *)data, wid, hei, (int)bitdepth, (int)rwb);
     return image;
 }
 void gfx_line( int x1, int y1, int x2, int y2 )
@@ -161,10 +168,10 @@ int gfx_event_waiting()
 
 
 uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
-	uint8_t keycodereceived; 
+	uint8_t keycodereceived=0; 
 	XEvent event;
 	gfx_flush();
-	while(keycodereceived!=keycode) {
+	do {
 		XNextEvent(gfx_display,&event);
 		switch (event.type){
 		case KeyPress:
@@ -199,7 +206,7 @@ uint8_t waitForKey(uint8_t keycode, uint32_t *x, uint32_t *y){
 			}
 			break;
 		}
-	}
+	}while(keycodereceived!=keycode);
 	return 0; 
 }
 

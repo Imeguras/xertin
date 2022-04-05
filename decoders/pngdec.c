@@ -1,4 +1,7 @@
 #include "pngdec.h"
+#include <png.h>
+#include <stdint.h>
+#include <stdlib.h>
 png_byte unused_chunks[]={
 104,  73,  83,  84, (png_byte) ' ',
 105,  84,  88, 116, (png_byte) ' ',
@@ -24,7 +27,7 @@ void readpng_version_info(){
 				fprintf(stderr, "   Compiled with zlib %s; using zlib %s.\n",
 					ZLIB_VERSION, zlib_version);
 }
-pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
+pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei, int * pdepth){
 		png_voidp per_chunck_ptr; 
 		size_t readnum; 
 		FILE *fp;
@@ -101,20 +104,32 @@ pngimp readpng_verificar(char *file, size_t* rwb, uint32_t* wid, uint32_t* hei){
 		#else
 		png_set_gamma(png_ptr, PNG_DEFAULT_sRGB, 1.0/PNG_DEFAULT_sRGB);
 		#endif
+		   
 	png_set_bgr(png_ptr);
-	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL); 
 	
-	*rwb=png_get_rowbytes(png_ptr, info_ptr);
-	*wid=png_get_image_width(png_ptr, info_ptr);
-	*hei=png_get_image_height(png_ptr, info_ptr);
+	png_read_png(png_ptr, info_ptr, PNG_TRANSFORM_IDENTITY, NULL);
+	int colorTp; 
+	int interLc;
+	int comprTp; 
+	int filterMt;
+	*rwb=png_get_rowbytes( png_ptr,  info_ptr);
+	/*wid=png_get_image_width( png_ptr,  info_ptr);
+	*hei=png_get_image_height( png_ptr,  info_ptr);
+	*pdepth=png_get_bit_depth( png_ptr, info_ptr);*/
+	png_get_IHDR(png_ptr, info_ptr, wid, hei, pdepth, &colorTp, &interLc,&comprTp, &filterMt); 
+	//png_get_gAMA(png_ptr, info_ptr,0 );
+	
 	png_bytepp row_pointers = png_malloc(png_ptr,(*hei)*(sizeof (png_bytep)));
 	
-	for (uint32_t i=0; i<(*hei); ++i){
+	/*for (uint32_t i=0; i<(*hei); ++i){
 		row_pointers[i]=NULL;
 		row_pointers[i]=png_malloc(png_ptr, *wid);
-	}
+	}*/
+	
 	row_pointers = png_get_rows(png_ptr, info_ptr);
 	png_set_rows(png_ptr, info_ptr, row_pointers);
+	
+
 	//png_read_end(png_ptr, info_ptr);
 		fclose(fp);
 	pngimp returnvalue={row_pointers,png_ptr, info_ptr};
@@ -148,30 +163,31 @@ int32_t readpng_chunk_callback(png_structp png_ptr,png_unknown_chunkp chunk){
 }
 //TODO
 void pngread_whilerow(png_structp png_ptr, png_uint_32 row, int pass){
-	png_get_copyright(png_ptr);	
+	//png_get_copyright(png_ptr);	
 	if(flags==1){ 
 		printf("Reading row:%d, pass:%d\n", row, pass);
 	}
 }
-void pngread_destroy(pngimp matrix){
-	png_destroy_info_struct(matrix.png_ptr, &matrix.info_ptr);
-	png_destroy_read_struct(&matrix.png_ptr,&matrix.info_ptr, NULL);
+void pngread_destroy(pngimp matrix, uint32_t hei){
+	
+	//free(matrix.vetor);
+	
 	//TODO VERIFY IF EVERYTHINGS FREE'D PROPERLY 
 	/*for (uint32_t i = 0; i < hei; ++i){
-		if(matrix.matrix[hei]!=NULL){
-			free(matrix.matrix[hei]);
-			matrix.matrix[hei]=NULL;
-		}else{
-			fprintf(stderr, "ItS ALREADY CLEANED");
-		}
 		
-	}
-	if(matrix.matrix!=NULL){
-		free(matrix.matrix);
-		matrix.matrix=NULL;
+			png_free(matrix.png_ptr,&matrix.vetor[i][0]);
+			//matrix.vetor[hei]=NULL;
+		
+		
+	}*/
+	//png_free(matrix.png_ptr, matrix.vetor);
+	/*if(matrix.vetor!=NULL){
+		free(matrix.vetor);
+		//matrix.vetor=NULL;
 	}else
 	{
 		fprintf(stderr, "ItS ALREADY CLEANED");
 	}*/
-	
+	png_destroy_info_struct(matrix.png_ptr, &matrix.info_ptr);
+	png_destroy_read_struct(&matrix.png_ptr,&matrix.info_ptr, NULL);
 }

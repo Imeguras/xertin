@@ -49,7 +49,6 @@ json_object* readjson_init(const char *filename){
     if (!needle){
         ERROR(1, GENERAL_ALLOC_ERROR, "ERRX");    
     }
-    *needle='\0';
     fseek(fp, 0, SEEK_END);
     pos=ftell(fp);
     #ifdef SHOW_DEBUG
@@ -57,10 +56,11 @@ json_object* readjson_init(const char *filename){
     #endif 
     
     fseek(fp, 0, SEEK_SET);
-    needle=realloc(needle, pos);
+    needle=realloc(needle, pos+1);
     if(fread(needle, 1, pos, fp)!= pos){
         fprintf(stderr, GENERAL_READ_FILE_ERROR, "ERR10");
     }
+	needle[pos]='\0';
     #ifdef SHOW_DEBUG
         fprintf(stdout, "Config is:\n%s\n", needle);
     #endif 
