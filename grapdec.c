@@ -17,7 +17,8 @@ uint8_t * MatrizParaVetor(uint8_t** matriz, uint32_t hei, size_t rwb){
     uint8_t *pCurrent = vetor;
     for (uint32_t row = 0; row < hei; row++){
         uint8_t *pRow = matriz[row];
-        memcpy(pCurrent, pRow, rwb);
+        
+		memcpy(pCurrent, pRow, rwb);
         pCurrent += rwb;
     }
     return vetor;
@@ -79,7 +80,7 @@ uint8_t ** JanelaEescreve(uint8_t ** matrix, uint32_t width, uint32_t height, co
     return matrix;
 }
 
-uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, uint8_t bitdepth,size_t rwb, const char *title){
+uint8_t *displaygrap_winrite(uint8_t *vetor, uint32_t wid, uint32_t hei, int bitdepth,size_t rwb, const char *title){
     XImage *img;
     fprintf(stdout, "[Debug]: Window will be created with dimensions %dx%d", wid, hei);
     gfx_open(&wid, &hei, (const char *)title); 

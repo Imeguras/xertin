@@ -57,5 +57,5 @@ int gfx_event_waiting(void);
 /* Flush all previous output to the window. */
 void gfx_flush(void);
 void gfx_image(XImage *image, uint32_t wid, uint32_t hei);
-XImage *gfxvetor_image(uint8_t *data, uint8_t bitdepth, uint32_t wid, uint32_t hei, size_t rwb);
+XImage *gfxvetor_image(uint8_t *data, int bitdepth, uint32_t wid, uint32_t hei, size_t rwb);
 #endif
